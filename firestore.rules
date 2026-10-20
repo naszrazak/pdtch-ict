@@ -1,0 +1,87 @@
+rules_version = '2';
+
+// Pengguna sistem dikenal pasti melalui dokumen /pengguna/{emel} (emel huruf kecil).
+// admin: akses penuh. juruteknik: boleh tambah dan kemaskini, tidak boleh padam.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function masuk() { return request.auth != null && request.auth.token.email is string; }
+    function emel() { return request.auth.token.email.lower(); }
+    function adaProfil() { return exists(/databases/$(database)/documents/pengguna/$(emel())); }
+    function profil() { return get(/databases/$(database)/documents/pengguna/$(emel())).data; }
+    function berdaftar() { return masuk() && adaProfil() && profil().aktif == true; }
+    function admin() { return berdaftar() && profil().peranan == 'admin'; }
+    function bolehTulis() { return berdaftar() && profil().peranan in ['admin', 'juruteknik']; }
+    function sistemDimulakan() { return exists(/databases/$(database)/documents/config/sistem); }
+    function jejakBetul() {
+      return request.resource.data.dikemaskiniOleh == emel()
+        && request.resource.data.dikemaskiniPada == request.time;
+    }
+
+    // Persediaan kali pertama: pengguna pertama menjadikan dirinya admin, sekali sahaja.
+    match /config/sistem {
+      allow read: if masuk();
+      allow create: if masuk()
+        && !sistemDimulakan()
+        && request.resource.data.keys().hasOnly(['dimulakanOleh', 'dimulakanPada'])
+        && request.resource.data.dimulakanOleh == emel()
+        && request.resource.data.dimulakanPada == request.time
+        && getAfter(/databases/$(database)/documents/pengguna/$(emel())).data.peranan == 'admin';
+      allow update, delete: if false;
+    }
+
+    match /pengguna/{e} {
+      allow read: if (masuk() && e == emel()) || berdaftar();
+      allow create: if admin()
+        || (masuk() && e == emel() && !sistemDimulakan()
+            && existsAfter(/databases/$(database)/documents/config/sistem)
+            && request.resource.data.peranan == 'admin'
+            && request.resource.data.aktif == true);
+      // Admin tidak boleh menurunkan atau menyahaktifkan dirinya sendiri.
+      allow update: if admin()
+        && request.resource.data.peranan in ['admin', 'juruteknik']
+        && (e != emel() || (request.resource.data.peranan == 'admin' && request.resource.data.aktif == true));
+      allow delete: if admin() && e != emel();
+    }
+
+    match /bahagian/{id} {
+      allow read: if berdaftar();
+      allow create, update: if admin() && jejakBetul();
+      allow delete: if admin();
+    }
+
+    match /unit/{id} {
+      allow read: if berdaftar();
+      allow create, update: if admin() && jejakBetul();
+      allow delete: if admin();
+    }
+
+    match /staf/{id} {
+      allow read: if berdaftar();
+      allow create, update: if bolehTulis() && jejakBetul();
+      allow delete: if admin();
+    }
+
+    match /aset/{id} {
+      allow read: if berdaftar();
+      allow create, update: if bolehTulis() && jejakBetul();
+      allow delete: if admin();
+
+      match /sejarah/{sid} {
+        allow read: if berdaftar();
+        allow create: if bolehTulis() && request.resource.data.oleh == emel() && request.resource.data.masa == request.time;
+        allow update: if false;
+        allow delete: if admin();
+      }
+    }
+
+    // Log audit: hanya boleh ditambah oleh pengguna berdaftar atas namanya sendiri; tidak boleh diubah atau dipadam.
+    match /logAudit/{id} {
+      allow read: if admin();
+      allow create: if berdaftar()
+        && request.resource.data.oleh == emel()
+        && request.resource.data.masa == request.time;
+      allow update, delete: if false;
+    }
+  }
+}

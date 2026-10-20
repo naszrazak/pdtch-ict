@@ -1,0 +1,8 @@
+node_modules
+dist
+.firebase
+*.log
+firebase-debug.log*
+firestore-debug.log*
+.env.local
+*.xlsx

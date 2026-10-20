@@ -17,7 +17,7 @@ Sistem untuk merekod dan mengurus aset ICT di PDTCH, mengikut hierarki:
 
 ## Teknologi
 
-- React + Vite + Tailwind
+- React + TypeScript + Vite + Tailwind
 - Firebase (Auth, Firestore, Storage, Hosting)
 - **Projek Firebase baru**, berasingan daripada sistem lain
 - Mesra telefon, kerana sistem diguna terus untuk kerja inventori di meja staf
@@ -96,4 +96,7 @@ Mengikut format sedia ada di PDTCH:
 
 ## Status
 
-Perancangan selesai. Belum mula membina. Langkah seterusnya: mula Fasa 1 dalam repo ini.
+- **Fasa 1 siap dibina** (lihat README.md untuk persediaan Firebase dan cara guna).
+- Tambahan semasa pembinaan: bila pemegang aset bertukar, aset yang diikat (contoh monitor) boleh dipindah bersama.
+- Import staf dibuat dalam sistem (halaman Import Staf); fail Excel dibaca dalam pelayar dan tidak disimpan dalam repo.
+- Langkah seterusnya: persediaan Firebase Console dan deploy, kemudian Fasa 2.

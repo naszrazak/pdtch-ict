@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/* Tailwind v4 menggunakan currentColor sebagai warna sempadan lalai; guna kelabu lembut. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-slate-200, currentColor);
+  }
+}
+
+@utility input {
+  @apply w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-600 focus:ring-1 focus:ring-blue-600 focus:outline-none disabled:bg-slate-100;
+}
+@utility label {
+  @apply mb-1 block text-sm font-medium text-slate-700;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-1 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-blue-800 text-white hover:bg-blue-900;
+}
+@utility btn-secondary {
+  @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+}
+@utility btn-danger {
+  @apply btn bg-red-600 text-white hover:bg-red-700;
+}
+@utility card {
+  @apply rounded-lg bg-white p-4 shadow-sm;
+}
