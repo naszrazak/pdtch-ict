@@ -31,11 +31,6 @@ export interface Staf extends Jejak {
   susunan?: number
 }
 
-export interface Gambar {
-  url: string
-  path: string
-}
-
 export type JenisPemegang = 'staf' | 'gunasama'
 
 export interface DataAset {
@@ -53,7 +48,6 @@ export interface DataAset {
   bahagianId?: string | null
   indukId: string | null
   catatan: string
-  gambar: Gambar[]
 }
 
 export interface Aset extends DataAset, Jejak {

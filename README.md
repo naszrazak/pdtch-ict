@@ -2,7 +2,7 @@
 
 Sistem Senarai Aset ICT PDTCH (Fasa 1). Rujuk [PERANCANGAN.md](PERANCANGAN.md) untuk keputusan reka bentuk.
 
-Teknologi: React + TypeScript + Vite + Tailwind, Firebase (Auth, Firestore, Storage, Hosting).
+Teknologi: React + TypeScript + Vite + Tailwind, Firebase (Auth, Firestore, Hosting). Berfungsi dalam pelan **Spark** (percuma); Storage tidak digunakan.
 
 ## Persediaan Firebase (sekali sahaja)
 
@@ -12,18 +12,14 @@ Projek Firebase: `pdtch-ict`. Di [Firebase Console](https://console.firebase.goo
 2. **Authentication → Settings → User actions**: **nyahtanda "Enable create (sign-up)"** supaya orang luar tidak boleh mendaftar sendiri. Akaun hanya dicipta oleh FT.
 3. **Authentication → Users → Add user**: cipta akaun untuk FT dan PPTM.
 4. **Firestore Database**: cipta pangkalan data (mod production, lokasi `asia-southeast1`).
-5. **Storage**: aktifkan (untuk gambar label no. siri / pelekat harta modal).
 
 Kemudian, dari komputer yang ada Node.js 20 atau lebih baharu:
 
 ```bash
 npm install
 npx firebase login
-npm run deploy        # semak jenis, bina, deploy peraturan Firestore/Storage dan hosting
+npm run deploy        # semak jenis, bina, deploy peraturan Firestore dan hosting
 ```
-
-Semasa deploy kali pertama, Firebase CLI mungkin bertanya sama ada mahu beri kebenaran kepada Storage untuk membaca
-Firestore (peraturan Storage menyemak profil pengguna dalam Firestore). Jawab **Yes**.
 
 ## Mula guna
 
@@ -32,7 +28,7 @@ Firestore (peraturan Storage menyemak profil pengguna dalam Firestore). Jawab **
 2. **Import Staf**: muat naik `DATABASE_STAF_PDTCH_2026_SYAMIR.xlsx`. Sistem mencipta 3 bahagian, 9 unit dan 100 staf.
    Kumpulan "Warga Kerja UE" dikecualikan. Import boleh diulang dengan selamat (nama sedia ada dilangkau).
 3. **Pengguna**: tambah emel PPTM (akaun mesti sudah dicipta di Firebase Authentication) dan pilih peranan Admin.
-4. Mula rekod aset di meja staf (mesra telefon): **Tambah aset → pilih staf → isi → ambil gambar label → Simpan & tambah lagi**.
+4. Mula rekod aset di meja staf (mesra telefon): **Tambah aset → pilih staf → isi → Simpan & tambah lagi**.
 
 ## Peranan
 
@@ -48,7 +44,7 @@ Setiap perubahan direkod dalam **Log Audit** (siapa, apa, bila, medan yang berub
 - Login dan peranan (Admin / Juruteknik)
 - Struktur Bahagian → Unit → Staf, termasuk import dari Excel
 - Rekod aset: jenis, jenama, model, no. siri, no. pendaftaran harta modal, tarikh terima, tarikh tamat warranty,
-  status, pemegang (staf atau GUNASAMA), gambar label, catatan
+  status, pemegang (staf atau GUNASAMA), catatan
 - Ikat aset kepada aset lain (contoh: monitor kepada PC). Bila pemegang PC bertukar, aset yang diikat boleh dipindah bersama
 - Sejarah pemegang untuk setiap aset
 - Senarai aset belum lengkap (tiada no. siri, no. pendaftaran atau tarikh warranty)
@@ -75,7 +71,6 @@ src/
   components/     komponen UI dikongsi
   pages/          halaman
 firestore.rules   peraturan keselamatan Firestore
-storage.rules     peraturan keselamatan Storage
 tests/            ujian unit
 tests-rules/      ujian peraturan Firestore
 ```

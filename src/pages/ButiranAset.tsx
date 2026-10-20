@@ -8,7 +8,6 @@ import { labelJenis } from '../lib/konstan'
 import { formatTarikh, jenamaModel, medanTidakLengkap } from '../lib/aset'
 import { dataAsal, padam } from '../lib/tulis'
 import type { SejarahPemegang } from '../types'
-import { cubaPadamGambar } from '../lib/gambar'
 import JadualAset from '../components/JadualAset'
 import { Kosong, LencanaStatus, Ralat, TajukHalaman, mesejRalat } from '../components/ui'
 
@@ -57,7 +56,6 @@ export default function ButiranAset() {
         sebelum: dataAsal(a),
         ringkasan: `Padam ${labelJenis(a.jenis)} ${jenamaModel(a)} (${a._nama})`,
       })
-      a.gambar?.forEach((g) => cubaPadamGambar(g.path))
       navigate('/aset', { replace: true })
     } catch (err) {
       setRalat(mesejRalat(err))
@@ -114,19 +112,6 @@ export default function ButiranAset() {
         </Baris>
         <Baris label="Catatan">{a.catatan}</Baris>
       </dl>
-
-      {a.gambar?.length > 0 && (
-        <section className="card">
-          <h2 className="mb-2 font-medium">Gambar</h2>
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {a.gambar.map((g) => (
-              <a key={g.path} href={g.url} target="_blank" rel="noreferrer">
-                <img src={g.url} alt="Label aset" className="aspect-square w-full rounded-md object-cover" />
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
 
       <section>
         <div className="mb-2 flex items-center justify-between">

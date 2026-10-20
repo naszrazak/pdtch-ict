@@ -18,7 +18,7 @@ Sistem untuk merekod dan mengurus aset ICT di PDTCH, mengikut hierarki:
 ## Teknologi
 
 - React + TypeScript + Vite + Tailwind
-- Firebase (Auth, Firestore, Storage, Hosting)
+- Firebase (Auth, Firestore, Hosting), pelan **Spark** (tiada Storage)
 - **Projek Firebase baru**, berasingan daripada sistem lain
 - Mesra telefon, kerana sistem diguna terus untuk kerja inventori di meja staf
 
@@ -53,7 +53,6 @@ Sumber: fail Excel `DATABASE_STAF_PDTCH_2026_SYAMIR.xlsx` (asalnya senarai pener
   - Tarikh terima, tarikh tamat warranty (pilihan)
   - Status: aktif, rosak, dalam pembaikan, dilupuskan
   - Pemegang: seorang staf, **atau GUNASAMA** (dikongsi, di bawah unit)
-  - Gambar label nombor siri atau pelekat harta modal (pilihan)
 - Aset boleh **diikat** ke aset lain, contohnya monitor ke set PC (pilihan)
 - Senarai **"aset belum lengkap"**: aset tanpa nombor siri, no. pendaftaran atau tarikh warranty
 - Sejarah pemegang disimpan bila aset berpindah tangan
@@ -98,5 +97,6 @@ Mengikut format sedia ada di PDTCH:
 
 - **Fasa 1 siap dibina** (lihat README.md untuk persediaan Firebase dan cara guna).
 - Tambahan semasa pembinaan: bila pemegang aset bertukar, aset yang diikat (contoh monitor) boleh dipindah bersama.
+- Ciri gambar label dibuang kerana Firebase Storage memerlukan pelan Blaze; projek guna pelan Spark.
 - Import staf dibuat dalam sistem (halaman Import Staf); fail Excel dibaca dalam pelayar dan tidak disimpan dalam repo.
 - Langkah seterusnya: persediaan Firebase Console dan deploy, kemudian Fasa 2.

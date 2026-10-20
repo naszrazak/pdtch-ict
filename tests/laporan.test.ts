@@ -14,7 +14,6 @@ const aset = (a: Partial<Aset> & Pick<Aset, 'id' | 'jenis' | 'status' | 'pemegan
   unitId: null,
   indukId: null,
   catatan: '',
-  gambar: [],
   ...a,
 })
 

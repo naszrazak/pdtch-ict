@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent, type MouseEvent } from 'react'
+import { useState, type FormEvent, type MouseEvent } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { doc, serverTimestamp, type WriteBatch } from 'firebase/firestore'
 import { db } from '../lib/firebase'
@@ -7,11 +7,10 @@ import { useData } from '../context/Data'
 import { JENIS_ASET, STATUS_ASET, labelJenis, type KodJenis, type KodStatus } from '../lib/konstan'
 import { bolehJadiInduk, jenamaModel, labelPemegang, pemegangBerubah } from '../lib/aset'
 import { dataAsal, idBaharu, simpan } from '../lib/tulis'
-import { cubaPadamGambar, muatNaikGambarAset } from '../lib/gambar'
 import PilihStaf from '../components/PilihStaf'
 import PilihOrganisasi from '../components/PilihOrganisasi'
 import { Kosong, Medan, Ralat, TajukHalaman, mesejRalat } from '../components/ui'
-import type { AsetPenuh, DataAset, Gambar, JenisPemegang, Staf } from '../types'
+import type { AsetPenuh, DataAset, JenisPemegang, Staf } from '../types'
 
 // Nilai borang: medan rujukan disimpan sebagai '' (bukan null) supaya sesuai untuk input HTML.
 interface NilaiBorang {
@@ -28,7 +27,6 @@ interface NilaiBorang {
   unitId: string
   indukId: string
   catatan: string
-  gambar: Gambar[]
 }
 
 const KOSONG: NilaiBorang = {
@@ -45,7 +43,6 @@ const KOSONG: NilaiBorang = {
   unitId: '',
   indukId: '',
   catatan: '',
-  gambar: [],
 }
 
 const kodJenis = (x: string | null): KodJenis | undefined => JENIS_ASET.find((j) => j.kod === x)?.kod
@@ -66,7 +63,6 @@ function nilaiAwal(asal: AsetPenuh | undefined, params: URLSearchParams, stafMap
       unitId: asal.unitId ?? '',
       indukId: asal.indukId ?? '',
       catatan: asal.catatan ?? '',
-      gambar: asal.gambar ?? [],
     }
   }
   const stafId = params.get('stafId') ?? ''
@@ -99,7 +95,6 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
   const [f, setF] = useState<NilaiBorang>(() => nilaiAwal(asal, params, stafMap))
   const [ralat, setRalat] = useState('')
   const [sibuk, setSibuk] = useState(false)
-  const [muatNaik, setMuatNaik] = useState(false)
   const [mesej, setMesej] = useState('')
 
   const set = (ubah: Partial<NilaiBorang>) => setF((x) => ({ ...x, ...ubah }))
@@ -117,29 +112,6 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
     .filter((a) =>
       f.pemegang === 'staf' ? a.pemegang === 'staf' && a.stafId === f.stafId : a.pemegang === 'gunasama' && a.unitId === f.unitId,
     )
-
-  async function tambahGambar(e: ChangeEvent<HTMLInputElement>) {
-    const fail = [...(e.target.files ?? [])]
-    e.target.value = ''
-    if (!fail.length) return
-    setMuatNaik(true)
-    setRalat('')
-    try {
-      const baru: Gambar[] = []
-      for (const x of fail) baru.push(await muatNaikGambarAset(asetId, x))
-      setF((v) => ({ ...v, gambar: [...v.gambar, ...baru] }))
-    } catch (err) {
-      setRalat(`Gagal muat naik gambar: ${mesejRalat(err)}`)
-    } finally {
-      setMuatNaik(false)
-    }
-  }
-
-  function buangGambar(g: Gambar) {
-    set({ gambar: f.gambar.filter((x) => x.path !== g.path) })
-    // Fail hanya dipadam terus jika gambar belum pernah disimpan dalam rekod.
-    if (!asal?.gambar?.some((x) => x.path === g.path)) cubaPadamGambar(g.path)
-  }
 
   async function hantar(e: FormEvent | MouseEvent, tambahLagi = false) {
     e.preventDefault()
@@ -165,7 +137,6 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
       bahagianId: unitMap.get(unitId)?.bahagianId ?? null,
       indukId: f.indukId || null,
       catatan: f.catatan.trim(),
-      gambar: f.gambar,
     }
 
     const pendua = asetPenuh.filter(
@@ -353,37 +324,13 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
         </div>
       </section>
 
-      <section className="card space-y-3">
-        <h2 className="font-medium">Gambar label no. siri / pelekat harta modal (pilihan)</h2>
-        {f.gambar.length > 0 && (
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {f.gambar.map((g) => (
-              <div key={g.path} className="relative">
-                <img src={g.url} alt="" className="aspect-square w-full rounded-md object-cover" />
-                <button
-                  type="button"
-                  onClick={() => buangGambar(g)}
-                  className="absolute right-1 top-1 rounded-full bg-black/60 px-2 text-sm text-white"
-                  aria-label="Buang gambar"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-        <label className={`btn-secondary cursor-pointer ${muatNaik ? 'pointer-events-none opacity-50' : ''}`}>
-          {muatNaik ? 'Memuat naik...' : 'Ambil / pilih gambar'}
-          <input type="file" accept="image/*" capture="environment" multiple className="hidden" onChange={tambahGambar} />
-        </label>
-      </section>
 
       <div className="flex flex-wrap gap-2 pb-8">
-        <button className="btn-primary" disabled={sibuk || muatNaik}>
+        <button className="btn-primary" disabled={sibuk}>
           {sibuk ? 'Menyimpan...' : 'Simpan'}
         </button>
         {!asal && (
-          <button type="button" className="btn-secondary" disabled={sibuk || muatNaik} onClick={(e) => hantar(e, true)}>
+          <button type="button" className="btn-secondary" disabled={sibuk} onClick={(e) => hantar(e, true)}>
             Simpan & tambah lagi
           </button>
         )}

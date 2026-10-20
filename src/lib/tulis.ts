@@ -33,7 +33,7 @@ export interface PilihanSimpan {
   koleksi: string
   /** null untuk dokumen baharu */
   id: string | null
-  /** id yang telah dijana untuk dokumen baharu (contoh: selepas muat naik gambar) */
+  /** id yang telah dijana untuk dokumen baharu (contoh: untuk "Simpan & tambah lagi") */
   idBaru?: string
   data: Dokumen
   /** data asal (untuk kemaskini) */

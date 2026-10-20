@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:emulator": "firebase emulators:exec --only auth,firestore,storage --project demo-pdtch-ict \"vite --mode emulator\"",
+    "dev:emulator": "firebase emulators:exec --only auth,firestore --project demo-pdtch-ict \"vite --mode emulator\"",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . && tsc --noEmit",
