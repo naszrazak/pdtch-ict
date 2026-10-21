@@ -35,7 +35,7 @@ export function jawatanGred(staf: Pick<Staf, 'jawatan' | 'gred'> | null | undefi
   return [staf.jawatan, staf.gred]
     .map((x) => String(x ?? '').trim())
     .filter(Boolean)
-    .join(' / ')
+    .join(' ')
 }
 
 export function jenamaModel(aset: Partial<Pick<DataAset, 'jenama' | 'model'>>): string {

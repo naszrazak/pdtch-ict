@@ -4,6 +4,7 @@ import { useAuth } from '../context/Auth'
 import { useData } from '../context/Data'
 import { BorangBahagian, BorangStaf, BorangUnit } from '../components/BorangOrganisasi'
 import { Kosong, TajukHalaman } from '../components/ui'
+import { jawatanGred } from '../lib/aset'
 import type { Bahagian, Staf, Unit } from '../types'
 
 type BorangTerbuka =
@@ -112,7 +113,7 @@ export default function Organisasi() {
                                   <span className="min-w-0">
                                     <span className="block truncate">{s.nama}</span>
                                     <span className="block truncate text-xs text-slate-500">
-                                      {[s.jawatan, s.gred].filter(Boolean).join(' / ') || '-'}
+                                      {jawatanGred(s) || '-'}
                                     </span>
                                   </span>
                                   <span className="shrink-0 text-xs text-slate-500">{bilAset.get(`s:${s.id}`) ?? 0} aset</span>
