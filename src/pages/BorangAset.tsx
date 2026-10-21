@@ -4,6 +4,7 @@ import { doc, serverTimestamp, type WriteBatch } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { usePengguna } from '../context/Auth'
 import { useData } from '../context/Data'
+import { jejakOrganisasi } from '../lib/jejak'
 import { JENIS_ADA_MONITOR, JENIS_ASET, STATUS_ASET, labelJenis, type KodJenis, type KodStatus } from '../lib/konstan'
 import { bolehJadiInduk, jenamaModel, labelPemegang, pemegangBerubah, sirinya } from '../lib/aset'
 import { dataAsal, idBaharu, simpan } from '../lib/tulis'
@@ -91,7 +92,7 @@ export default function BorangAset() {
 
 function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefined }) {
   const pengguna = usePengguna()
-  const { stafMap, unitMap, asetPenuh } = useData()
+  const { stafMap, unitMap, bahagianMap, asetPenuh } = useData()
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const [asetId, setAsetId] = useState(() => id ?? idBaharu('aset'))
@@ -115,6 +116,19 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
     .filter((a) =>
       f.pemegang === 'staf' ? a.pemegang === 'staf' && a.stafId === f.stafId : a.pemegang === 'gunasama' && a.unitId === f.unitId,
     )
+
+  // Breadcrumb: aset sedia ada menunjuk laluan pemegang asal; aset baharu ikut pemegang yang sedang dipilih.
+  const stafJejak = f.pemegang === 'staf' ? stafMap.get(f.stafId) : undefined
+  const unitJejak = unitMap.get(stafJejak ? stafJejak.unitId : f.unitId)
+  const jejakBaru = jejakOrganisasi(unitJejak && bahagianMap.get(unitJejak.bahagianId), unitJejak, stafJejak)
+  const jejak = asal
+    ? [
+        ...jejakOrganisasi(asal._bahagian, asal._unit, asal._staf),
+        { label: `${labelJenis(asal.jenis)} ${jenamaModel(asal)}`, to: `/aset/${asal.id}` },
+      ]
+    : jejakBaru.length > 1
+      ? jejakBaru
+      : [{ label: 'Aset', to: '/aset' }]
 
   async function hantar(e: FormEvent | MouseEvent, tambahLagi = false) {
     e.preventDefault()
@@ -216,7 +230,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
 
   return (
     <form onSubmit={hantar} className="mx-auto max-w-2xl space-y-4">
-      <TajukHalaman tajuk={asal ? 'Kemaskini Aset' : 'Tambah Aset'} />
+      <TajukHalaman jejak={jejak} tajuk={asal ? 'Kemaskini Aset' : 'Tambah Aset'} />
       <Ralat>{ralat}</Ralat>
       {mesej && <div className="rounded-md bg-green-50 p-3 text-sm text-green-800">{mesej}</div>}
 

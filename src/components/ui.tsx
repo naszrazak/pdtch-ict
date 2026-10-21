@@ -1,4 +1,5 @@
-import { useEffect, type ReactNode } from 'react'
+import { Fragment, useEffect, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { labelStatus, warnaStatus } from '../lib/konstan'
 
 export function Memuat({ penuh = false, teks = 'Memuatkan...' }: { penuh?: boolean; teks?: string }) {
@@ -27,10 +28,46 @@ export function Ralat({ children }: { children?: ReactNode }) {
   return <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">{children}</div>
 }
 
-export function TajukHalaman({ tajuk, keterangan, children }: { tajuk: string; keterangan?: ReactNode; children?: ReactNode }) {
+export interface LangkahJejak {
+  label: string
+  to?: string
+}
+
+// Breadcrumb: pautan untuk kembali ke halaman induk tanpa melalui menu.
+export function Jejak({ langkah }: { langkah: LangkahJejak[] }) {
+  return (
+    <nav className="mb-1 flex flex-wrap items-center gap-x-1 text-sm text-slate-500" aria-label="Breadcrumb">
+      {langkah.map((l, i) => (
+        <Fragment key={i}>
+          {i > 0 && <span aria-hidden>›</span>}
+          {l.to ? (
+            <Link to={l.to} className="text-blue-800 hover:underline">
+              {l.label}
+            </Link>
+          ) : (
+            <span>{l.label}</span>
+          )}
+        </Fragment>
+      ))}
+    </nav>
+  )
+}
+
+export function TajukHalaman({
+  tajuk,
+  keterangan,
+  jejak,
+  children,
+}: {
+  tajuk: string
+  keterangan?: ReactNode
+  jejak?: LangkahJejak[]
+  children?: ReactNode
+}) {
   return (
     <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
       <div>
+        {jejak && <Jejak langkah={jejak} />}
         <h1 className="text-xl font-semibold text-slate-900">{tajuk}</h1>
         {keterangan && <p className="text-sm text-slate-500">{keterangan}</p>}
       </div>

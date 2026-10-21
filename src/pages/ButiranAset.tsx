@@ -10,6 +10,7 @@ import { dataAsal, padam } from '../lib/tulis'
 import type { SejarahPemegang } from '../types'
 import JadualAset from '../components/JadualAset'
 import { Kosong, LencanaStatus, Ralat, TajukHalaman, mesejRalat } from '../components/ui'
+import { jejakOrganisasi } from '../lib/jejak'
 
 function Baris({ label, children }: { label: string; children?: ReactNode }) {
   return (
@@ -64,7 +65,11 @@ export default function ButiranAset() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <TajukHalaman tajuk={`${labelJenis(a.jenis)} ${jenamaModel(a)}`} keterangan={a._nama}>
+      <TajukHalaman
+        jejak={jejakOrganisasi(a._bahagian, a._unit, a._staf)}
+        tajuk={`${labelJenis(a.jenis)} ${jenamaModel(a)}`}
+        keterangan={a._nama}
+      >
         {bolehTulis && (
           <Link to={`/aset/${a.id}/kemaskini`} className="btn-primary">
             Kemaskini

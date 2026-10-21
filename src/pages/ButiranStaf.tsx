@@ -6,6 +6,7 @@ import { susunAset } from '../lib/carian'
 import { BorangStaf } from '../components/BorangOrganisasi'
 import JadualAset from '../components/JadualAset'
 import { Kosong, TajukHalaman } from '../components/ui'
+import { jejakOrganisasi } from '../lib/jejak'
 
 export default function ButiranStaf() {
   const id = useParams().id ?? ''
@@ -20,7 +21,10 @@ export default function ButiranStaf() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-4">
-      <TajukHalaman tajuk={s.nama} keterangan={[s.jawatan, s.gred].filter(Boolean).join(' / ') || 'Jawatan / gred belum diisi'}>
+      <TajukHalaman
+        jejak={jejakOrganisasi(u && bahagianMap.get(u.bahagianId), u)}
+        tajuk={s.nama}
+        keterangan={[s.jawatan, s.gred].filter(Boolean).join(' / ') || 'Jawatan / gred belum diisi'}>
         {bolehTulis && (
           <>
             <button className="btn-secondary" onClick={() => setUbah(true)}>

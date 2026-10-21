@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/Auth'
 import { useData } from '../context/Data'
 import { BorangBahagian, BorangStaf, BorangUnit } from '../components/BorangOrganisasi'
@@ -15,7 +15,12 @@ export default function Organisasi() {
   const { isAdmin, bolehTulis } = useAuth()
   const { bahagian, unit, staf, asetPenuh } = useData()
   const [borang, setBorang] = useState<BorangTerbuka | null>(null)
-  const [terbuka, setTerbuka] = useState(() => new Set<string>())
+  // ?unit=ID (dari breadcrumb) membuka unit itu terus.
+  const unitDipilih = useSearchParams()[0].get('unit')
+  const [terbuka, setTerbuka] = useState(() => new Set<string>(unitDipilih ? [unitDipilih] : []))
+  useEffect(() => {
+    if (unitDipilih) document.getElementById(`unit-${unitDipilih}`)?.scrollIntoView({ block: 'start' })
+  }, [unitDipilih])
   const [q, setQ] = useState('')
   const tutup = () => setBorang(null)
 
@@ -90,7 +95,7 @@ export default function Organisasi() {
                   if (kata && tapis.length === 0) return null
                   const buka = kata || terbuka.has(u.id)
                   return (
-                    <li key={u.id} className="py-2">
+                    <li key={u.id} id={`unit-${u.id}`} className="scroll-mt-4 py-2">
                       <button className="flex w-full items-center justify-between text-left" onClick={() => togol(u.id)}>
                         <span className="font-medium">
                           <span className="mr-1 inline-block w-4 text-slate-400">{buka ? '▾' : '▸'}</span>
