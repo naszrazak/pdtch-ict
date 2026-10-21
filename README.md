@@ -8,10 +8,9 @@ Teknologi: React + TypeScript + Vite + Tailwind, Firebase (Auth, Firestore, Host
 
 Projek Firebase: `pdtch-ict`. Di [Firebase Console](https://console.firebase.google.com/project/pdtch-ict):
 
-1. **Authentication → Sign-in method**: aktifkan **Email/Password**.
-2. **Authentication → Settings → User actions**: **nyahtanda "Enable create (sign-up)"** supaya orang luar tidak boleh mendaftar sendiri. Akaun hanya dicipta oleh FT.
-3. **Authentication → Users → Add user**: cipta akaun untuk FT dan PPTM.
-4. **Firestore Database**: cipta pangkalan data (mod production, lokasi `asia-southeast1`).
+1. **Authentication → Sign-in method**: aktifkan **Google**. Login hanya melalui akaun Google.
+2. **Authentication → Settings → User actions**: biarkan **"Enable create (sign-up)"** bertanda, jika tidak akaun Google baharu tidak boleh log masuk. Akses sistem tetap dikawal oleh senarai **Pengguna** dalam sistem; akaun Google yang tiada dalam senarai tidak boleh melihat data.
+3. **Firestore Database**: cipta pangkalan data (mod production, lokasi `asia-southeast1`).
 
 Kemudian, dari komputer yang ada Node.js 20 atau lebih baharu:
 
@@ -27,7 +26,7 @@ npm run deploy        # semak jenis, bina, deploy peraturan Firestore dan hostin
    Langkah ini hanya boleh dibuat sekali.
 2. **Import Staf**: muat naik `DATABASE_STAF_PDTCH_2026_SYAMIR.xlsx`. Sistem mencipta 3 bahagian, 9 unit dan 100 staf.
    Kumpulan "Warga Kerja UE" dikecualikan. Import boleh diulang dengan selamat (nama sedia ada dilangkau).
-3. **Pengguna**: tambah emel PPTM (akaun mesti sudah dicipta di Firebase Authentication) dan pilih peranan Admin.
+3. **Pengguna**: tambah emel PPTM (emel akaun Google mereka) dan pilih peranan Admin.
 4. Mula rekod aset di meja staf (mesra telefon): **Tambah aset → pilih staf → isi → Simpan & tambah lagi**.
 
 ## Peranan
