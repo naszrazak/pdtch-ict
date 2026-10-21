@@ -1,5 +1,5 @@
 import type { Aset, Bahagian, Staf, Unit } from '../types'
-import { JENIS_ADA_MONITOR, JENIS_ASET, GUNASAMA, tajukJenis, type KodJenis } from './konstan'
+import { JENIS_ADA_MONITOR, JENIS_ASET, GUNASAMA, labelJenis, tajukJenis, type KodJenis } from './konstan'
 import { bandingSusunan, formatTarikh, jawatanGred, jenamaModel, unitIdAset } from './aset'
 
 export const PILIHAN_STATUS_LAPORAN = [
@@ -10,6 +10,9 @@ export const PILIHAN_STATUS_LAPORAN = [
   { kod: 'pembaikan', label: 'Dalam pembaikan sahaja' },
   { kod: 'dilupus', label: 'Dilupuskan sahaja' },
 ] as const
+
+// Nilai tapis jenis: semua jenis dalam satu senarai (tanpa diasingkan ikut jenis).
+export const JENIS_GABUNG = 'gabung'
 
 export type TapisStatusLaporan = (typeof PILIHAN_STATUS_LAPORAN)[number]['kod']
 
@@ -26,6 +29,7 @@ export interface BarisLaporan {
   bil: number
   nama: string
   jawatanGred: string
+  jenis: string
   jenamaModel: string
   noSiri: string
   noSiriMonitor: string
@@ -35,7 +39,8 @@ export interface BarisLaporan {
 }
 
 export interface SeksyenLaporan {
-  jenis: KodJenis
+  /** null = semua jenis digabung dalam satu senarai */
+  jenis: KodJenis | null
   tajuk: string
   subtajuk: string[]
   baris: BarisLaporan[]
@@ -55,13 +60,18 @@ export interface DataLaporan {
 }
 
 // Lajur monitor hanya dipaparkan bila laporan mengandungi jenis yang boleh ada monitor.
-export const adaLajurMonitor = (seksyen: SeksyenLaporan[]): boolean => seksyen.some((s) => JENIS_ADA_MONITOR.includes(s.jenis))
+export const adaLajurMonitor = (seksyen: SeksyenLaporan[]): boolean =>
+  seksyen.some((s) => s.jenis === null || JENIS_ADA_MONITOR.includes(s.jenis))
 
-export function lajurLaporan(lajurWarranty?: boolean, lajurMonitor?: boolean): LajurLaporan[] {
+// Lajur jenis aset hanya perlu bila semua jenis digabung dalam satu senarai.
+export const adaLajurJenis = (seksyen: SeksyenLaporan[]): boolean => seksyen.some((s) => s.jenis === null)
+
+export function lajurLaporan(lajurWarranty?: boolean, lajurMonitor?: boolean, lajurJenis?: boolean): LajurLaporan[] {
   const lajur: LajurLaporan[] = [
     { kunci: 'bil', tajuk: 'Bil', lebar: 6 },
     { kunci: 'nama', tajuk: 'Nama Pengguna', lebar: 34 },
     { kunci: 'jawatanGred', tajuk: 'Jawatan / Gred', lebar: 28 },
+    ...(lajurJenis ? [{ kunci: 'jenis', tajuk: 'Jenis Aset', lebar: 16 } as const] : []),
     { kunci: 'jenamaModel', tajuk: 'Jenama / Model', lebar: 28 },
     { kunci: 'noSiri', tajuk: 'No. Siri', lebar: 22 },
     ...(lajurMonitor ? [{ kunci: 'noSiriMonitor', tajuk: 'No. Siri Monitor', lebar: 22 } as const] : []),
@@ -104,7 +114,8 @@ export function binaLaporan(data: DataLaporan, tapis: TapisLaporan): SeksyenLapo
 
   const seksyen = new Map<string, SeksyenSementara>()
   for (const a of aset) {
-    if (tapis.jenis && a.jenis !== tapis.jenis) continue
+    const gabung = tapis.jenis === JENIS_GABUNG
+    if (tapis.jenis && !gabung && a.jenis !== tapis.jenis) continue
     if (!lulusStatus(a.status, tapis.status ?? 'xdilupus')) continue
     const uId = unitIdAset(a, stafMap)
     const u = uId ? unitMap.get(uId) : undefined
@@ -114,16 +125,16 @@ export function binaLaporan(data: DataLaporan, tapis: TapisLaporan): SeksyenLapo
     if (tapis.bahagianId && b.id !== tapis.bahagianId) continue
     if (tapis.unitId && u.id !== tapis.unitId) continue
 
-    const kunci = `${a.jenis}|${b.id}|${ikutUnit ? u.id : ''}`
+    const kunci = `${gabung ? '' : a.jenis}|${b.id}|${ikutUnit ? u.id : ''}`
     let s = seksyen.get(kunci)
     if (!s) {
       s = {
-        jenis: a.jenis,
-        tajuk: `SENARAI ASET ICT (${tajukJenis(a.jenis)})`,
+        jenis: gabung ? null : a.jenis,
+        tajuk: `SENARAI ASET ICT (${gabung ? 'SEMUA JENIS' : tajukJenis(a.jenis)})`,
         subtajuk: ikutUnit ? [b.nama.toUpperCase(), u.nama.toUpperCase()] : [b.nama.toUpperCase()],
         bahagian: b,
         unit: ikutUnit ? u : null,
-        susunJenis: susunJenis.get(a.jenis) ?? 99,
+        susunJenis: gabung ? 0 : (susunJenis.get(a.jenis) ?? 99),
         item: [],
       }
       seksyen.set(kunci, s)
@@ -144,6 +155,7 @@ export function binaLaporan(data: DataLaporan, tapis: TapisLaporan): SeksyenLapo
         bandingSusunan(p.u, q.u) ||
         (p.s ? 0 : 1) - (q.s ? 0 : 1) ||
         (p.s && q.s ? bandingSusunan(p.s, q.s) : 0) ||
+        (susunJenis.get(p.a.jenis) ?? 99) - (susunJenis.get(q.a.jenis) ?? 99) ||
         String(p.a.noPendaftaran ?? '').localeCompare(String(q.a.noPendaftaran ?? '')),
     )
     return {
@@ -154,6 +166,7 @@ export function binaLaporan(data: DataLaporan, tapis: TapisLaporan): SeksyenLapo
         bil: i + 1,
         nama: st ? st.nama : a.pemegang === 'staf' ? '(staf tiada)' : GUNASAMA,
         jawatanGred: jawatanGred(st),
+        jenis: labelJenis(a.jenis),
         jenamaModel: jenamaModel(a),
         noSiri: a.noSiri ?? '',
         noSiriMonitor: a.noSiriMonitor ?? '',

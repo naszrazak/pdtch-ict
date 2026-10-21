@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { binaLaporan, type DataLaporan } from '../src/lib/laporan'
+import { JENIS_GABUNG, binaLaporan, type DataLaporan } from '../src/lib/laporan'
 import type { Aset } from '../src/types'
 
 const aset = (a: Partial<Aset> & Pick<Aset, 'id' | 'jenis' | 'status' | 'pemegang'>): Aset => ({
@@ -68,4 +68,24 @@ test('ikut unit dengan tapisan bahagian, jenis dan status', () => {
     ['BAHAGIAN PENGURUSAN DAERAH', 'UNIT TEKNOLOGI MAKLUMAT'],
   ])
   assert.equal(binaLaporan(data, { ikut: 'unit', status: 'dilupus' })[0].tajuk, 'SENARAI ASET ICT (PENCETAK)')
+})
+
+test('semua jenis digabung: satu senarai bagi setiap bahagian, staf yang sama disusun ikut jenis', () => {
+  const s = binaLaporan(data, { ikut: 'bahagian', status: 'semua', jenis: JENIS_GABUNG })
+  assert.deepEqual(
+    s.map((x) => [x.jenis, x.tajuk, x.subtajuk]),
+    [
+      [null, 'SENARAI ASET ICT (SEMUA JENIS)', ['BAHAGIAN PENGURUSAN DAERAH']],
+      [null, 'SENARAI ASET ICT (SEMUA JENIS)', ['BAHAGIAN PENGURUSAN TANAH']],
+    ],
+  )
+  assert.deepEqual(
+    s[0].baris.map((b) => [b.nama, b.jenis]),
+    [
+      ['ALI', 'Komputer (PC)'],
+      ['ALI', 'Pencetak'],
+      ['GUNASAMA', 'Komputer (PC)'],
+      ['BAKAR', 'Komputer (PC)'],
+    ],
+  )
 })
