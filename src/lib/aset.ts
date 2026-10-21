@@ -61,6 +61,21 @@ interface BolehSusun {
   susunan?: number
 }
 
+// Kekananan jawatan: DO, CADO, kemudian ADO disenaraikan dahulu; jawatan lain ikut susunan biasa.
+const KEKANANAN = [/^PEGAWAI DAERAH\b/, /^KETUA PENOLONG PEGAWAI DAERAH\b/, /^PENOLONG PEGAWAI DAERAH\b/]
+
+export function kekananan(jawatan: string | null | undefined): number {
+  const j = String(jawatan ?? '')
+    .toUpperCase()
+    .replace(/\./g, ' ')
+    .replace(/\bPEN\b/g, 'PENOLONG')
+    .replace(/\bPEG\b/g, 'PEGAWAI')
+    .replace(/\s+/g, ' ')
+    .trim()
+  const i = KEKANANAN.findIndex((r) => r.test(j))
+  return i < 0 ? KEKANANAN.length : i
+}
+
 export function bandingSusunan(a: BolehSusun, b: BolehSusun): number {
   const sa = a.susunan ?? Number.MAX_SAFE_INTEGER
   const sb = b.susunan ?? Number.MAX_SAFE_INTEGER

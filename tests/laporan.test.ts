@@ -1,6 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { JENIS_GABUNG, binaLaporan, type DataLaporan } from '../src/lib/laporan'
+import { kekananan } from '../src/lib/aset'
 import type { Aset } from '../src/types'
 
 const aset = (a: Partial<Aset> & Pick<Aset, 'id' | 'jenis' | 'status' | 'pemegang'>): Aset => ({
@@ -88,4 +89,17 @@ test('semua jenis digabung: satu senarai bagi setiap bahagian, staf yang sama di
       ['BAKAR', 'Komputer (PC)'],
     ],
   )
+})
+
+test('kekananan: DO, CADO, ADO dahulu walaupun dalam unit kemudian', () => {
+  assert.deepEqual(
+    ['PEGAWAI DAERAH M13', 'KETUA PEN. PEG. DAERAH', 'PEN. PEG. DAERAH M10 (MEMANGKU)', 'PEN. PEG. TANAH', 'PEM. TADBIR'].map(kekananan),
+    [0, 1, 2, 3, 3],
+  )
+  const d: DataLaporan = {
+    ...data,
+    staf: data.staf.map((s) => ({ ...s, jawatan: { s1: 'PEM. TADBIR', s2: 'PEN. PEG. DAERAH' }[s.id] ?? s.jawatan })),
+  }
+  const s = binaLaporan(d, { ikut: 'bahagian', jenis: 'pc' })
+  assert.deepEqual(s[0].baris.map((b) => b.nama), ['BAKAR', 'ALI', 'GUNASAMA'])
 })

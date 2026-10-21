@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from '../lib/firebase'
-import { bandingSusunan, namaPemegang, unitIdAset } from '../lib/aset'
+import { bandingSusunan, kekananan, namaPemegang, unitIdAset } from '../lib/aset'
 import type { Aset, AsetPenuh, Bahagian, Staf, Unit } from '../types'
 
 // Saiz data PDTCH kecil (ratusan rekod), jadi semua koleksi utama didengar secara langsung
@@ -65,7 +65,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const sedia = KOLEKSI.every((k) => data[k])
     const bahagian = [...(data.bahagian ?? [])].sort(bandingSusunan)
     const unit = [...(data.unit ?? [])].sort(bandingSusunan)
-    const staf = [...(data.staf ?? [])].sort(bandingSusunan)
+    const staf = [...(data.staf ?? [])].sort((a, b) => kekananan(a.jawatan) - kekananan(b.jawatan) || bandingSusunan(a, b))
     const aset = data.aset ?? []
     const bahagianMap = new Map(bahagian.map((x) => [x.id, x]))
     const unitMap = new Map(unit.map((x) => [x.id, x]))
