@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FirebaseError } from 'firebase/app'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { auth } from '../lib/firebase'
+import { useAuth } from '../context/Auth'
 import { Ralat } from '../components/ui'
 
 const MESEJ: Record<string, string> = {
@@ -22,9 +23,11 @@ const mesejAuth = (err: unknown): string =>
 export default function Login() {
   const [ralat, setRalat] = useState('')
   const [sibuk, setSibuk] = useState(false)
+  const { ditolak, setDitolak } = useAuth()
 
   async function masuk() {
     setRalat('')
+    setDitolak('')
     setSibuk(true)
     try {
       await signInWithPopup(auth, new GoogleAuthProvider())
@@ -41,7 +44,7 @@ export default function Login() {
           <h1 className="text-xl font-semibold text-blue-900">Aset ICT PDTCH</h1>
           <p className="text-sm text-slate-500">Sistem Senarai Aset ICT</p>
         </div>
-        <Ralat>{ralat}</Ralat>
+        <Ralat>{ralat || ditolak}</Ralat>
         <button className="btn-primary w-full" onClick={masuk} disabled={sibuk}>
           {sibuk ? 'Sedang log masuk...' : 'Log masuk dengan Google'}
         </button>

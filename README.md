@@ -9,7 +9,7 @@ Teknologi: React + TypeScript + Vite + Tailwind, Firebase (Auth, Firestore, Host
 Projek Firebase: `pdtch-ict`. Di [Firebase Console](https://console.firebase.google.com/project/pdtch-ict):
 
 1. **Authentication → Sign-in method**: aktifkan **Google**. Login hanya melalui akaun Google.
-2. **Authentication → Settings → User actions**: biarkan **"Enable create (sign-up)"** bertanda, jika tidak akaun Google baharu tidak boleh log masuk. Akses sistem tetap dikawal oleh senarai **Pengguna** dalam sistem; akaun Google yang tiada dalam senarai tidak boleh melihat data.
+2. **Authentication → Settings → User actions**: biarkan **"Enable create (sign-up)"** bertanda, jika tidak akaun Google baharu tidak boleh log masuk. Akses sistem tetap dikawal oleh senarai **Pengguna** dalam sistem; akaun Google yang tiada dalam senarai ditolak dan dipadam terus dari Firebase Authentication (selepas sistem dimulakan).
 3. **Firestore Database**: cipta pangkalan data (mod production, lokasi `asia-southeast1`).
 
 Kemudian, dari komputer yang ada Node.js 20 atau lebih baharu:

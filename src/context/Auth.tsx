@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth'
-import { doc, getDoc, onSnapshot } from 'firebase/firestore'
+import { doc, getDoc, getDocFromServer, onSnapshot } from 'firebase/firestore'
 import { auth, db } from '../lib/firebase'
 import type { PenggunaLog, Profil } from '../types'
 
@@ -17,6 +17,9 @@ interface NilaiAuth {
   bolehTulis: boolean
   pengguna: PenggunaLog | null
   keluar: () => Promise<void>
+  /** Mesej bila akaun Google ditolak kerana tiada dalam senarai pengguna */
+  ditolak: string
+  setDitolak: (v: string) => void
 }
 
 const AuthContext = createContext<NilaiAuth | null>(null)
@@ -26,7 +29,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profil, setProfil] = useState<Profil | null | undefined>(undefined)
   const [sistemDimulakan, setSistemDimulakan] = useState<boolean | undefined>(undefined)
 
+  const [ditolak, setDitolak] = useState('')
+
   useEffect(() => onAuthStateChanged(auth, setUser), [])
+
+  // Akaun Google yang tiada dalam senarai pengguna dipadam terus dari Firebase Authentication.
+  // Dibaca dari pelayan supaya cache luar talian tidak menyebabkan pengguna sah tersalah dipadam.
+  // Sebelum sistem dimulakan, akaun dibiarkan supaya Admin pertama boleh mendaftar.
+  useEffect(() => {
+    if (!user?.email) return
+    const emel = user.email.toLowerCase()
+    let aktif = true
+    Promise.all([getDocFromServer(doc(db, 'pengguna', emel)), getDocFromServer(doc(db, 'config', 'sistem'))])
+      .then(async ([pengguna, sistem]) => {
+        if (!aktif || pengguna.exists() || !sistem.exists()) return
+        setDitolak(`Akaun ${emel} tiada dalam senarai pengguna sistem. Sila hubungi Admin (FT) untuk akses.`)
+        await user.delete().catch(() => signOut(auth))
+      })
+      .catch(() => {})
+    return () => {
+      aktif = false
+    }
+  }, [user])
 
   useEffect(() => {
     if (!user?.email) return
@@ -66,8 +90,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       bolehTulis: sah && (profil?.peranan === 'admin' || profil?.peranan === 'juruteknik'),
       pengguna: profil ? { emel: profil.emel, nama: profil.nama || profil.emel } : null,
       keluar: () => signOut(auth),
+      ditolak,
+      setDitolak,
     }
-  }, [user, profil, sistemDimulakan])
+  }, [user, profil, sistemDimulakan, ditolak])
 
   return <AuthContext.Provider value={nilai}>{children}</AuthContext.Provider>
 }
