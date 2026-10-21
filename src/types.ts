@@ -38,6 +38,8 @@ export interface DataAset {
   jenama: string
   model: string
   noSiri: string
+  /** No. siri monitor bagi PC/laptop; monitor berkongsi no. pendaftaran dengan aset ini */
+  noSiriMonitor?: string
   noPendaftaran: string
   tarikhTerima: string // YYYY-MM-DD atau ''
   tarikhTamatWarranty: string // YYYY-MM-DD atau ''

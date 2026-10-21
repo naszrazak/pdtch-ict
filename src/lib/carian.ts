@@ -21,7 +21,7 @@ export function tapisAset(aset: AsetPenuh[], tapis: Partial<TapisAset> = {}): As
     if (jenis && a.jenis !== jenis) return false
     if (status && a.status !== status) return false
     if (!kata.length) return true
-    const teks = normal([a._nama, a.jenama, a.model, a.noSiri, a.noPendaftaran, a._unit?.nama, a.catatan].join(' '))
+    const teks = normal([a._nama, a.jenama, a.model, a.noSiri, a.noSiriMonitor, a.noPendaftaran, a._unit?.nama, a.catatan].join(' '))
     return kata.every((k) => teks.includes(k))
   })
 }

@@ -100,6 +100,7 @@ export default function ButiranAset() {
         <Baris label="Jenis">{labelJenis(a.jenis)}</Baris>
         <Baris label="Jenama / Model">{jenamaModel(a)}</Baris>
         <Baris label="No. siri">{a.noSiri}</Baris>
+        {a.noSiriMonitor && <Baris label="No. siri monitor">{a.noSiriMonitor}</Baris>}
         <Baris label="No. pendaftaran">{a.noPendaftaran}</Baris>
         <Baris label="Tarikh terima">{formatTarikh(a.tarikhTerima)}</Baris>
         <Baris label="Tamat warranty">{formatTarikh(a.tarikhTamatWarranty)}</Baris>

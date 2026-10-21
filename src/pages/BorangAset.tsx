@@ -4,8 +4,8 @@ import { doc, serverTimestamp, type WriteBatch } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { usePengguna } from '../context/Auth'
 import { useData } from '../context/Data'
-import { JENIS_ASET, STATUS_ASET, labelJenis, type KodJenis, type KodStatus } from '../lib/konstan'
-import { bolehJadiInduk, jenamaModel, labelPemegang, pemegangBerubah } from '../lib/aset'
+import { JENIS_ADA_MONITOR, JENIS_ASET, STATUS_ASET, labelJenis, type KodJenis, type KodStatus } from '../lib/konstan'
+import { bolehJadiInduk, jenamaModel, labelPemegang, pemegangBerubah, sirinya } from '../lib/aset'
 import { dataAsal, idBaharu, simpan } from '../lib/tulis'
 import PilihStaf from '../components/PilihStaf'
 import PilihOrganisasi from '../components/PilihOrganisasi'
@@ -18,6 +18,7 @@ interface NilaiBorang {
   jenama: string
   model: string
   noSiri: string
+  noSiriMonitor: string
   noPendaftaran: string
   tarikhTerima: string
   tarikhTamatWarranty: string
@@ -34,6 +35,7 @@ const KOSONG: NilaiBorang = {
   jenama: '',
   model: '',
   noSiri: '',
+  noSiriMonitor: '',
   noPendaftaran: '',
   tarikhTerima: '',
   tarikhTamatWarranty: '',
@@ -54,6 +56,7 @@ function nilaiAwal(asal: AsetPenuh | undefined, params: URLSearchParams, stafMap
       jenama: asal.jenama ?? '',
       model: asal.model ?? '',
       noSiri: asal.noSiri ?? '',
+      noSiriMonitor: asal.noSiriMonitor ?? '',
       noPendaftaran: asal.noPendaftaran ?? '',
       tarikhTerima: asal.tarikhTerima ?? '',
       tarikhTamatWarranty: asal.tarikhTamatWarranty ?? '',
@@ -127,6 +130,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
       jenama: f.jenama.trim(),
       model: f.model.trim(),
       noSiri: f.noSiri.trim(),
+      noSiriMonitor: JENIS_ADA_MONITOR.includes(f.jenis) ? f.noSiriMonitor.trim() : '',
       noPendaftaran: f.noPendaftaran.trim().toUpperCase(),
       tarikhTerima: f.tarikhTerima,
       tarikhTamatWarranty: f.tarikhTamatWarranty,
@@ -142,8 +146,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
     const pendua = asetPenuh.filter(
       (a) =>
         a.id !== asetId &&
-        ((data.noSiri && a.noSiri?.toUpperCase() === data.noSiri.toUpperCase()) ||
-          (data.noPendaftaran && a.noPendaftaran === data.noPendaftaran)),
+        (sirinya(data).some((x) => sirinya(a).includes(x)) || (data.noPendaftaran && a.noPendaftaran === data.noPendaftaran)),
     )
     if (
       pendua.length &&
@@ -285,6 +288,16 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
         <Medan label="No. siri (pilihan)">
           <input className="input" value={f.noSiri} onChange={(e) => set({ noSiri: e.target.value })} autoCapitalize="characters" />
         </Medan>
+        {JENIS_ADA_MONITOR.includes(f.jenis) && (
+          <Medan label="No. siri monitor (pilihan)" nota="Monitor berkongsi no. pendaftaran dengan aset ini.">
+            <input
+              className="input"
+              value={f.noSiriMonitor}
+              onChange={(e) => set({ noSiriMonitor: e.target.value })}
+              autoCapitalize="characters"
+            />
+          </Medan>
+        )}
         <Medan label="No. pendaftaran harta modal (pilihan)">
           <input
             className="input"

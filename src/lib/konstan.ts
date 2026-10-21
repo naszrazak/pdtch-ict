@@ -28,6 +28,9 @@ export type KodPeranan = (typeof PERANAN)[number]['kod']
 
 export const GUNASAMA = 'GUNASAMA'
 
+// Jenis aset yang boleh mempunyai monitor sebagai aksesori (no. siri monitor direkod dalam aset yang sama).
+export const JENIS_ADA_MONITOR: readonly KodJenis[] = ['pc', 'laptop']
+
 const cari = <T extends { kod: string }>(senarai: readonly T[], kod: string | null | undefined) =>
   senarai.find((x) => x.kod === kod)
 

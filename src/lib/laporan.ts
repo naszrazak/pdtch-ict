@@ -1,5 +1,5 @@
 import type { Aset, Bahagian, Staf, Unit } from '../types'
-import { JENIS_ASET, GUNASAMA, tajukJenis, type KodJenis } from './konstan'
+import { JENIS_ADA_MONITOR, JENIS_ASET, GUNASAMA, tajukJenis, type KodJenis } from './konstan'
 import { bandingSusunan, formatTarikh, jawatanGred, jenamaModel, unitIdAset } from './aset'
 
 export const PILIHAN_STATUS_LAPORAN = [
@@ -28,6 +28,7 @@ export interface BarisLaporan {
   jawatanGred: string
   jenamaModel: string
   noSiri: string
+  noSiriMonitor: string
   noPendaftaran: string
   tarikhWarranty: string
   asetId: string
@@ -53,13 +54,17 @@ export interface DataLaporan {
   bahagian: Bahagian[]
 }
 
-export function lajurLaporan(lajurWarranty?: boolean): LajurLaporan[] {
+// Lajur monitor hanya dipaparkan bila laporan mengandungi jenis yang boleh ada monitor.
+export const adaLajurMonitor = (seksyen: SeksyenLaporan[]): boolean => seksyen.some((s) => JENIS_ADA_MONITOR.includes(s.jenis))
+
+export function lajurLaporan(lajurWarranty?: boolean, lajurMonitor?: boolean): LajurLaporan[] {
   const lajur: LajurLaporan[] = [
     { kunci: 'bil', tajuk: 'Bil', lebar: 6 },
     { kunci: 'nama', tajuk: 'Nama Pengguna', lebar: 34 },
     { kunci: 'jawatanGred', tajuk: 'Jawatan / Gred', lebar: 28 },
     { kunci: 'jenamaModel', tajuk: 'Jenama / Model', lebar: 28 },
     { kunci: 'noSiri', tajuk: 'No. Siri', lebar: 22 },
+    ...(lajurMonitor ? [{ kunci: 'noSiriMonitor', tajuk: 'No. Siri Monitor', lebar: 22 } as const] : []),
     { kunci: 'noPendaftaran', tajuk: 'No. Pendaftaran', lebar: 26 },
   ]
   if (lajurWarranty) lajur.push({ kunci: 'tarikhWarranty', tajuk: 'Tamat Warranty', lebar: 14 })
@@ -151,6 +156,7 @@ export function binaLaporan(data: DataLaporan, tapis: TapisLaporan): SeksyenLapo
         jawatanGred: jawatanGred(st),
         jenamaModel: jenamaModel(a),
         noSiri: a.noSiri ?? '',
+        noSiriMonitor: a.noSiriMonitor ?? '',
         noPendaftaran: a.noPendaftaran ?? '',
         tarikhWarranty: formatTarikh(a.tarikhTamatWarranty),
         asetId: a.id,

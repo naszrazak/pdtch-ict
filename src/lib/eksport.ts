@@ -1,5 +1,5 @@
 import type { Borders } from 'exceljs'
-import { lajurLaporan, namaFailLaporan, type SeksyenLaporan } from './laporan'
+import { adaLajurMonitor, lajurLaporan, namaFailLaporan, type SeksyenLaporan } from './laporan'
 
 interface PilihanEksport {
   lajurWarranty?: boolean
@@ -19,7 +19,7 @@ function muatTurun(blob: Blob, namaFail: string): void {
 // PDF A4 landskap, tanpa logo dan tanpa ruang tandatangan. Satu seksyen satu halaman baharu.
 export async function janaPdf(seksyen: SeksyenLaporan[], { lajurWarranty = false }: PilihanEksport = {}): Promise<void> {
   const [{ jsPDF }, { autoTable }] = await Promise.all([import('jspdf'), import('jspdf-autotable')])
-  const lajur = lajurLaporan(lajurWarranty)
+  const lajur = lajurLaporan(lajurWarranty, adaLajurMonitor(seksyen))
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
   const lebarHalaman = doc.internal.pageSize.getWidth()
   const margin = 12
@@ -75,7 +75,7 @@ function namaLembaran(s: SeksyenLaporan, terpakai: Set<string>): string {
 // Excel untuk disunting: satu lembaran bagi setiap seksyen, disediakan untuk cetakan A4 landskap.
 export async function janaExcel(seksyen: SeksyenLaporan[], { lajurWarranty = false }: PilihanEksport = {}): Promise<void> {
   const { default: ExcelJS } = await import('exceljs')
-  const lajur = lajurLaporan(lajurWarranty)
+  const lajur = lajurLaporan(lajurWarranty, adaLajurMonitor(seksyen))
   const wb = new ExcelJS.Workbook()
   const terpakai = new Set<string>()
   const sempadan: Partial<Borders> = {

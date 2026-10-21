@@ -12,6 +12,11 @@ export function medanTidakLengkap(aset: Partial<DataAset>): string[] {
   return MEDAN_WAJIB_LENGKAP.filter(({ medan }) => !String(aset[medan] ?? '').trim()).map((m) => m.label)
 }
 
+// Semua no. siri pada aset (termasuk monitor), huruf besar, untuk semakan pendua.
+export function sirinya(aset: Pick<DataAset, 'noSiri' | 'noSiriMonitor'>): string[] {
+  return [aset.noSiri, aset.noSiriMonitor].map((x) => String(x ?? '').trim().toUpperCase()).filter(Boolean)
+}
+
 type RujukanPemegang = Pick<Aset, 'pemegang' | 'stafId' | 'unitId'>
 
 // Unit aset dikira daripada staf pemegang supaya kekal betul bila staf bertukar unit.
