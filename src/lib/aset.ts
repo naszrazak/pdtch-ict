@@ -5,11 +5,14 @@ import { GUNASAMA } from './konstan'
 export const MEDAN_WAJIB_LENGKAP = [
   { medan: 'noSiri', label: 'No. siri' },
   { medan: 'noPendaftaran', label: 'No. pendaftaran' },
-  { medan: 'tarikhTamatWarranty', label: 'Tarikh warranty' },
+  { medan: 'tempohWarranty', label: 'Tempoh warranty' },
 ] as const satisfies readonly { medan: keyof DataAset; label: string }[]
 
 export function medanTidakLengkap(aset: Partial<DataAset>): string[] {
-  return MEDAN_WAJIB_LENGKAP.filter(({ medan }) => !String(aset[medan] ?? '').trim()).map((m) => m.label)
+  // Rekod lama yang hanya ada tarikh tamat dikira sudah ada maklumat warranty.
+  const ada = (medan: keyof DataAset) =>
+    !!String(aset[medan] ?? '').trim() || (medan === 'tempohWarranty' && !!aset.tarikhTamatWarranty)
+  return MEDAN_WAJIB_LENGKAP.filter(({ medan }) => !ada(medan)).map((m) => m.label)
 }
 
 // Semua no. siri pada aset (termasuk monitor), huruf besar, untuk semakan pendua.
@@ -43,6 +46,26 @@ export function jenamaModel(aset: Partial<Pick<DataAset, 'jenama' | 'model'>>): 
     .map((x) => String(x ?? '').trim())
     .filter(Boolean)
     .join(' ')
+}
+
+export function tambahTahun(iso: string, tahun: number): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  if (!y || !m || !d) return ''
+  const t = new Date(Date.UTC(y + tahun, m - 1, d))
+  return t.toISOString().slice(0, 10)
+}
+
+// Tempoh (tahun penuh) bagi rekod lama yang hanya menyimpan tarikh terima dan tarikh tamat.
+export function tempohDariTarikh(terima: string, tamat: string): number | null {
+  if (!terima || !tamat) return null
+  const tahun = Number(tamat.slice(0, 4)) - Number(terima.slice(0, 4))
+  return tahun > 0 && tambahTahun(terima, tahun) === tamat ? tahun : null
+}
+
+export function labelWarranty(aset: Pick<DataAset, 'tempohWarranty' | 'tarikhTamatWarranty'>): string {
+  const tamat = formatTarikh(aset.tarikhTamatWarranty)
+  if (!aset.tempohWarranty) return tamat
+  return `${aset.tempohWarranty} tahun${tamat ? ` (tamat ${tamat})` : ''}`
 }
 
 export function formatTarikh(iso: string | null | undefined): string {

@@ -1,6 +1,6 @@
 import type { Aset, Bahagian, Staf, Unit } from '../types'
 import { JENIS_ADA_MONITOR, JENIS_ASET, GUNASAMA, labelJenis, tajukJenis, type KodJenis } from './konstan'
-import { bandingSusunan, formatTarikh, jawatanGred, jenamaModel, kekananan, unitIdAset } from './aset'
+import { bandingSusunan, jawatanGred, labelWarranty, jenamaModel, kekananan, unitIdAset } from './aset'
 
 export const PILIHAN_STATUS_LAPORAN = [
   { kod: 'xdilupus', label: 'Semua kecuali dilupuskan' },
@@ -77,7 +77,7 @@ export function lajurLaporan(lajurWarranty?: boolean, lajurMonitor?: boolean, la
     ...(lajurMonitor ? [{ kunci: 'noSiriMonitor', tajuk: 'No. Siri Monitor', lebar: 22 } as const] : []),
     { kunci: 'noPendaftaran', tajuk: 'No. Pendaftaran', lebar: 26 },
   ]
-  if (lajurWarranty) lajur.push({ kunci: 'tarikhWarranty', tajuk: 'Tamat Warranty', lebar: 14 })
+  if (lajurWarranty) lajur.push({ kunci: 'tarikhWarranty', tajuk: 'Tempoh Warranty', lebar: 22 })
   return lajur
 }
 
@@ -172,7 +172,7 @@ export function binaLaporan(data: DataLaporan, tapis: TapisLaporan): SeksyenLapo
         noSiri: a.noSiri ?? '',
         noSiriMonitor: a.noSiriMonitor ?? '',
         noPendaftaran: a.noPendaftaran ?? '',
-        tarikhWarranty: formatTarikh(a.tarikhTamatWarranty),
+        tarikhWarranty: labelWarranty(a),
         asetId: a.id,
       })),
     }

@@ -42,6 +42,8 @@ export interface DataAset {
   noSiriMonitor?: string
   noPendaftaran: string
   tarikhTerima: string // YYYY-MM-DD atau ''
+  /** Tempoh warranty dalam tahun; tarikh tamat dikira daripada tarikh terima */
+  tempohWarranty?: number | null
   tarikhTamatWarranty: string // YYYY-MM-DD atau ''
   status: KodStatus
   pemegang: JenisPemegang

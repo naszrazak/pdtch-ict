@@ -80,7 +80,7 @@ export default function Laporan() {
         </label>
         <label className="flex items-center gap-2 self-end pb-2 text-sm">
           <input type="checkbox" checked={t.lajurWarranty} onChange={(e) => set({ lajurWarranty: e.target.checked })} />
-          Tambah lajur tarikh tamat warranty
+          Tambah lajur tempoh warranty
         </label>
       </div>
 

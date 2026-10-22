@@ -5,7 +5,7 @@ import { db } from '../lib/firebase'
 import { useAuth, usePengguna } from '../context/Auth'
 import { useData } from '../context/Data'
 import { labelJenis } from '../lib/konstan'
-import { formatTarikh, jenamaModel, medanTidakLengkap } from '../lib/aset'
+import { formatTarikh, jenamaModel, labelWarranty, medanTidakLengkap } from '../lib/aset'
 import { dataAsal, padam } from '../lib/tulis'
 import type { SejarahPemegang } from '../types'
 import JadualAset, { type NavigasiAset } from '../components/JadualAset'
@@ -150,7 +150,7 @@ export default function ButiranAset() {
         {a.noSiriMonitor && <Baris label="No. siri monitor">{a.noSiriMonitor}</Baris>}
         <Baris label="No. pendaftaran">{a.noPendaftaran}</Baris>
         <Baris label="Tarikh terima">{formatTarikh(a.tarikhTerima)}</Baris>
-        <Baris label="Tamat warranty">{formatTarikh(a.tarikhTamatWarranty)}</Baris>
+        <Baris label="Tempoh warranty">{labelWarranty(a)}</Baris>
         <Baris label="Diikat kepada">
           {induk && (
             <Link to={`/aset/${induk.id}`} className="text-blue-800 underline">

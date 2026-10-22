@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { JENIS_GABUNG, binaLaporan, type DataLaporan } from '../src/lib/laporan'
-import { kekananan } from '../src/lib/aset'
+import { kekananan, labelWarranty, tambahTahun, tempohDariTarikh } from '../src/lib/aset'
 import type { Aset } from '../src/types'
 
 const aset = (a: Partial<Aset> & Pick<Aset, 'id' | 'jenis' | 'status' | 'pemegang'>): Aset => ({
@@ -102,4 +102,13 @@ test('kekananan: DO, CADO, ADO dahulu walaupun dalam unit kemudian', () => {
   }
   const s = binaLaporan(d, { ikut: 'bahagian', jenis: 'pc' })
   assert.deepEqual(s[0].baris.map((b) => b.nama), ['BAKAR', 'ALI', 'GUNASAMA'])
+})
+
+test('tempoh warranty: kira tarikh tamat dan label', () => {
+  assert.equal(tambahTahun('2023-03-12', 3), '2026-03-12')
+  assert.equal(tempohDariTarikh('2023-03-12', '2026-03-12'), 3)
+  assert.equal(tempohDariTarikh('2023-03-12', '2026-01-01'), null)
+  assert.equal(labelWarranty({ tempohWarranty: 3, tarikhTamatWarranty: '2026-03-12' }), '3 tahun (tamat 12/03/2026)')
+  assert.equal(labelWarranty({ tempohWarranty: 5, tarikhTamatWarranty: '' }), '5 tahun')
+  assert.equal(labelWarranty({ tempohWarranty: null, tarikhTamatWarranty: '2026-01-01' }), '01/01/2026')
 })

@@ -16,7 +16,7 @@ export default function BelumLengkap() {
     <>
       <TajukHalaman
         tajuk="Aset Belum Lengkap"
-        keterangan={`${hasil.length} aset tanpa no. siri, no. pendaftaran atau tarikh warranty (tidak termasuk dilupuskan)`}
+        keterangan={`${hasil.length} aset tanpa no. siri, no. pendaftaran atau tempoh warranty (tidak termasuk dilupuskan)`}
       />
       <PenapisAset nilai={tapis} onChange={setTapis} tanpaStatus />
       <JadualAset aset={hasil} tunjukKurang />

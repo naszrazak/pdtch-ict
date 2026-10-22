@@ -6,7 +6,16 @@ import { usePengguna } from '../context/Auth'
 import { useData } from '../context/Data'
 import { jejakOrganisasi } from '../lib/jejak'
 import { JENIS_ADA_MONITOR, JENIS_ASET, STATUS_ASET, labelJenis, type KodJenis, type KodStatus } from '../lib/konstan'
-import { bolehJadiInduk, jenamaModel, labelPemegang, pemegangBerubah, sirinya } from '../lib/aset'
+import {
+  bolehJadiInduk,
+  formatTarikh,
+  jenamaModel,
+  labelPemegang,
+  pemegangBerubah,
+  sirinya,
+  tambahTahun,
+  tempohDariTarikh,
+} from '../lib/aset'
 import { dataAsal, idBaharu, simpan } from '../lib/tulis'
 import PilihStaf from '../components/PilihStaf'
 import PilihOrganisasi from '../components/PilihOrganisasi'
@@ -22,6 +31,7 @@ interface NilaiBorang {
   noSiriMonitor: string
   noPendaftaran: string
   tarikhTerima: string
+  tempohWarranty: string
   tarikhTamatWarranty: string
   status: KodStatus
   pemegang: JenisPemegang
@@ -39,6 +49,7 @@ const KOSONG: NilaiBorang = {
   noSiriMonitor: '',
   noPendaftaran: '',
   tarikhTerima: '',
+  tempohWarranty: '',
   tarikhTamatWarranty: '',
   status: 'aktif',
   pemegang: 'staf',
@@ -60,6 +71,7 @@ function nilaiAwal(asal: AsetPenuh | undefined, params: URLSearchParams, stafMap
       noSiriMonitor: asal.noSiriMonitor ?? '',
       noPendaftaran: asal.noPendaftaran ?? '',
       tarikhTerima: asal.tarikhTerima ?? '',
+      tempohWarranty: String(asal.tempohWarranty ?? tempohDariTarikh(asal.tarikhTerima, asal.tarikhTamatWarranty) ?? ''),
       tarikhTamatWarranty: asal.tarikhTamatWarranty ?? '',
       status: asal.status,
       pemegang: asal.pemegang,
@@ -130,6 +142,17 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
       ? jejakBaru
       : [{ label: 'Aset', to: '/aset' }]
 
+  // Tarikh tamat dikira daripada tempoh; rekod lama tanpa tempoh mengekalkan tarikh tamat asal.
+  const tempoh = Number(f.tempohWarranty) > 0 ? Math.floor(Number(f.tempohWarranty)) : null
+  const tarikhLamaSahaja = !!asal && !asal.tempohWarranty && tempohDariTarikh(asal.tarikhTerima, asal.tarikhTamatWarranty) === null
+  const tamatWarranty = tempoh
+    ? f.tarikhTerima
+      ? tambahTahun(f.tarikhTerima, tempoh)
+      : ''
+    : tarikhLamaSahaja
+      ? f.tarikhTamatWarranty
+      : ''
+
   async function hantar(e: FormEvent | MouseEvent, tambahLagi = false) {
     e.preventDefault()
     setRalat('')
@@ -147,7 +170,8 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
       noSiriMonitor: JENIS_ADA_MONITOR.includes(f.jenis) ? f.noSiriMonitor.trim() : '',
       noPendaftaran: f.noPendaftaran.trim().toUpperCase(),
       tarikhTerima: f.tarikhTerima,
-      tarikhTamatWarranty: f.tarikhTamatWarranty,
+      tempohWarranty: tempoh,
+      tarikhTamatWarranty: tamatWarranty,
       status: f.status,
       pemegang: f.pemegang,
       stafId: staf ? staf.id : null,
@@ -325,13 +349,29 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
         <Medan label="Tarikh terima (pilihan)">
           <input className="input" type="date" value={f.tarikhTerima} onChange={(e) => set({ tarikhTerima: e.target.value })} />
         </Medan>
-        <Medan label="Tarikh tamat warranty (pilihan)">
-          <input
-            className="input"
-            type="date"
-            value={f.tarikhTamatWarranty}
-            onChange={(e) => set({ tarikhTamatWarranty: e.target.value })}
-          />
+        <Medan
+          label="Tempoh warranty (pilihan)"
+          nota={
+            tamatWarranty
+              ? `Tamat ${formatTarikh(tamatWarranty)}`
+              : tempoh
+                ? 'Isi tarikh terima untuk kira tarikh tamat.'
+                : undefined
+          }
+        >
+          <div className="flex items-center gap-2">
+            <input
+              className="input"
+              type="number"
+              min={0}
+              step={1}
+              inputMode="numeric"
+              value={f.tempohWarranty}
+              onChange={(e) => set({ tempohWarranty: e.target.value })}
+              placeholder="Contoh: 3"
+            />
+            <span className="text-sm text-slate-500">tahun</span>
+          </div>
         </Medan>
         <div className="sm:col-span-2">
           <Medan label="Diikat kepada aset (pilihan)" nota="Contoh: monitor diikat kepada set PC pemegang yang sama.">
