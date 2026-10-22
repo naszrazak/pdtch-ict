@@ -9,7 +9,7 @@ type NilaiTapis = Required<TapisLaporan>
 
 export default function Laporan() {
   const data = useData()
-  const [t, setT] = useState<NilaiTapis>({ bahagianId: '', unitId: '', jenis: 'pc', status: 'xdilupus', ikut: 'unit', lajurWarranty: false })
+  const [t, setT] = useState<NilaiTapis>({ bahagianId: '', unitId: '', jenis: 'pc', status: 'xdilupus', ikut: 'bahagian', lajurWarranty: false })
   const [sibuk, setSibuk] = useState<'' | 'pdf' | 'excel'>('')
   const [ralat, setRalat] = useState('')
   const set = (ubah: Partial<NilaiTapis>) => setT((x) => ({ ...x, ...ubah }))
