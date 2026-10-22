@@ -122,6 +122,14 @@ export default function ButiranAset() {
             Padam
           </button>
         )}
+        {bolehTulis && (
+          <Link
+            to={a.pemegang === 'staf' && a.stafId ? `/aset/baru?stafId=${a.stafId}` : `/aset/baru?unitId=${a.unitId ?? ''}`}
+            className="btn-secondary"
+          >
+            + Tambah aset
+          </Link>
+        )}
       </TajukHalaman>
       <Ralat>{ralat}</Ralat>
       {kurang.length > 0 && a.status !== 'dilupus' && (
