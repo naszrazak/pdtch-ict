@@ -180,6 +180,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
         batch.set(doc(db, 'aset', asetIdSejarah, 'sejarah', idBaharu('aset')), {
           masa: serverTimestamp(),
           oleh: pengguna.emel,
+          namaOleh: pengguna.nama,
           dari,
           ke,
           pemegang: data.pemegang,

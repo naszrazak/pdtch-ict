@@ -31,6 +31,7 @@ export default function ButiranAset() {
   const pengguna = usePengguna()
   const navigate = useNavigate()
   const [sejarah, setSejarah] = useState<SejarahPemegang[]>([])
+  const [namaPengguna, setNamaPengguna] = useState(() => new Map<string, string>())
   const [ralat, setRalat] = useState('')
   const a = asetMap.get(id)
 
@@ -40,6 +41,17 @@ export default function ButiranAset() {
         setSejarah(s.docs.map((d) => ({ id: d.id, ...d.data() }) as SejarahPemegang)),
       ),
     [id],
+  )
+
+  // Rekod lama hanya menyimpan emel; nama paparan dicari daripada senarai pengguna.
+  useEffect(
+    () =>
+      onSnapshot(
+        collection(db, 'pengguna'),
+        (s) => setNamaPengguna(new Map(s.docs.map((d) => [d.id, String(d.data().nama || d.id)]))),
+        () => {},
+      ),
+    [],
   )
 
   if (!a) return <Kosong>Aset tidak dijumpai.</Kosong>
@@ -154,7 +166,7 @@ export default function ButiranAset() {
                   )}
                 </div>
                 <div className="text-xs text-slate-500">
-                  {formatMasa(s.masa)} · {s.oleh}
+                  {formatMasa(s.masa)} · {s.namaOleh || namaPengguna.get(s.oleh?.toLowerCase()) || s.oleh}
                 </div>
               </li>
             ))}

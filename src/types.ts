@@ -97,6 +97,7 @@ export interface SejarahPemegang {
   id: string
   masa?: Timestamp
   oleh: string
+  namaOleh?: string
   dari: string | null
   ke: string
   pemegang: JenisPemegang
