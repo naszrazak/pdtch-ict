@@ -5,7 +5,7 @@ import { db } from '../lib/firebase'
 import { useAuth, usePengguna } from '../context/Auth'
 import { useData } from '../context/Data'
 import { TUNJUK_WARRANTY, labelJenis } from '../lib/konstan'
-import { formatTarikh, jenamaModel, labelWarranty, medanTidakLengkap } from '../lib/aset'
+import { formatTarikh, jawatanGred, jenamaModel, labelWarranty, medanTidakLengkap } from '../lib/aset'
 import { dataAsal, padam } from '../lib/tulis'
 import type { SejarahPemegang } from '../types'
 import JadualAset, { type NavigasiAset } from '../components/JadualAset'
@@ -145,7 +145,7 @@ export default function ButiranAset() {
           ) : (
             a._nama
           )}
-          {a._staf?.jawatan && <div className="text-xs text-slate-500">{a._staf.jawatan}</div>}
+          {jawatanGred(a._staf) && <div className="text-xs text-slate-500">{jawatanGred(a._staf)}</div>}
         </Baris>
         <Baris label="Unit">{a._unit?.nama}</Baris>
         <Baris label="Bahagian">{a._bahagian?.nama}</Baris>
