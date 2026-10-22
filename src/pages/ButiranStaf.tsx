@@ -31,7 +31,7 @@ export default function ButiranStaf() {
             <button className="btn-secondary" onClick={() => setUbah(true)}>
               Kemaskini staf
             </button>
-            <Link to={`/aset/baru?stafId=${s.id}`} className="btn-primary">
+            <Link to="/aset/baru" className="btn-primary">
               + Tambah aset
             </Link>
           </>
