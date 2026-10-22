@@ -1,6 +1,6 @@
 import type { Aset, Bahagian, Staf, Unit } from '../types'
-import { JENIS_ADA_MONITOR, JENIS_ASET, GUNASAMA, labelJenis, tajukJenis, type KodJenis } from './konstan'
-import { bandingSusunan, jawatanGred, labelWarranty, jenamaModel, kekananan, unitIdAset } from './aset'
+import { JENIS_ADA_MONITOR, JENIS_ASET, labelJenis, tajukJenis, type KodJenis } from './konstan'
+import { bandingSusunan, jawatanGred, labelWarranty, namaGunasama, jenamaModel, kekananan, unitIdAset } from './aset'
 
 export const PILIHAN_STATUS_LAPORAN = [
   { kod: 'xdilupus', label: 'Semua kecuali dilupuskan' },
@@ -165,7 +165,7 @@ export function binaLaporan(data: DataLaporan, tapis: TapisLaporan): SeksyenLapo
       subtajuk,
       baris: item.map(({ a, s: st }, i) => ({
         bil: i + 1,
-        nama: st ? st.nama : a.pemegang === 'staf' ? '(staf tiada)' : GUNASAMA,
+        nama: st ? st.nama : a.pemegang === 'staf' ? '(staf tiada)' : namaGunasama(a),
         jawatanGred: jawatanGred(st),
         jenis: labelJenis(a.jenis),
         jenamaModel: jenamaModel(a),

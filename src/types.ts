@@ -49,6 +49,8 @@ export interface DataAset {
   pemegang: JenisPemegang
   stafId: string | null
   unitId: string | null
+  /** Nama lokasi aset gunasama tanpa PIC, contoh: KAUNTER HASIL */
+  lokasi?: string
   bahagianId?: string | null
   indukId: string | null
   catatan: string

@@ -37,6 +37,7 @@ interface NilaiBorang {
   pemegang: JenisPemegang
   stafId: string
   unitId: string
+  lokasi: string
   indukId: string
   catatan: string
 }
@@ -55,6 +56,7 @@ const KOSONG: NilaiBorang = {
   pemegang: 'staf',
   stafId: '',
   unitId: '',
+  lokasi: '',
   indukId: '',
   catatan: '',
 }
@@ -78,6 +80,7 @@ function nilaiAwal(asal: AsetPenuh | undefined, params: URLSearchParams, stafMap
       stafId: asal.stafId ?? '',
       unitId: asal.unitId ?? '',
       indukId: asal.indukId ?? '',
+      lokasi: asal.lokasi ?? '',
       catatan: asal.catatan ?? '',
     }
   }
@@ -121,7 +124,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
   const anak = asal ? asetPenuh.filter((x) => x.indukId === asal.id) : []
   const [pindahAnak, setPindahAnak] = useState(true)
   const pemegangDiubah =
-    !!asal && pemegangBerubah(asal, { pemegang: f.pemegang, stafId: f.stafId || null, unitId: f.unitId || null })
+    !!asal && pemegangBerubah(asal, { pemegang: f.pemegang, stafId: f.stafId || null, unitId: f.unitId || null, lokasi: f.lokasi })
 
   const calonInduk = asetPenuh
     .filter((a) => a.id !== asetId && a.status !== 'dilupus' && bolehJadiInduk(a, asetId, asetPenuh))
@@ -178,6 +181,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
       unitId,
       bahagianId: unitMap.get(unitId)?.bahagianId ?? null,
       indukId: f.indukId || null,
+      lokasi: f.pemegang === 'gunasama' ? f.lokasi.trim().toUpperCase() : '',
       catatan: f.catatan.trim(),
     }
 
@@ -198,7 +202,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
     try {
       const berubah = pemegangBerubah(asal, data)
       const unit = unitMap.get(unitId)
-      const ke = labelPemegang({ pemegang: data.pemegang, staf, unit })
+      const ke = labelPemegang({ pemegang: data.pemegang, staf, unit, lokasi: data.lokasi })
       const ikutPindah = berubah && pindahAnak ? anak : []
       const rekodSejarah = (batch: WriteBatch, asetIdSejarah: string, dari: string | null) =>
         batch.set(doc(db, 'aset', asetIdSejarah, 'sejarah', idBaharu('aset')), {
@@ -222,18 +226,19 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
           (ikutPindah.length ? ` beserta ${ikutPindah.length} aset diikat` : ''),
         tambahan: berubah
           ? (batch, ref) => {
-              rekodSejarah(batch, ref.id, asal ? labelPemegang({ pemegang: asal.pemegang, staf: asal._staf, unit: asal._unit }) : null)
+              rekodSejarah(batch, ref.id, asal ? labelPemegang({ pemegang: asal.pemegang, staf: asal._staf, unit: asal._unit, lokasi: asal.lokasi }) : null)
               // Aset yang diikat (contoh: monitor kepada PC) berpindah bersama dalam batch yang sama.
               for (const c of ikutPindah) {
                 batch.update(doc(db, 'aset', c.id), {
                   pemegang: data.pemegang,
                   stafId: data.stafId,
                   unitId: data.unitId,
+                  lokasi: data.lokasi,
                   bahagianId: data.bahagianId,
                   dikemaskiniPada: serverTimestamp(),
                   dikemaskiniOleh: pengguna.emel,
                 })
-                rekodSejarah(batch, c.id, labelPemegang({ pemegang: c.pemegang, staf: c._staf, unit: c._unit }))
+                rekodSejarah(batch, c.id, labelPemegang({ pemegang: c.pemegang, staf: c._staf, unit: c._unit, lokasi: c.lokasi }))
               }
             }
           : undefined,
@@ -287,6 +292,17 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
                 set({ unitId, indukId: '' })
               }}
             />
+            <div className="sm:col-span-2">
+              <Medan label="Nama lokasi / kaunter (pilihan)" nota="Dipaparkan sebagai nama pengguna dalam laporan. Jika kosong: GUNASAMA.">
+                <input
+                  className="input"
+                  value={f.lokasi}
+                  onChange={(e) => set({ lokasi: e.target.value })}
+                  placeholder="Contoh: KAUNTER HASIL"
+                  autoCapitalize="characters"
+                />
+              </Medan>
+            </div>
           </div>
         )}
         {pemegangDiubah && anak.length > 0 && (

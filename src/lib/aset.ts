@@ -22,7 +22,7 @@ export function sirinya(aset: Pick<DataAset, 'noSiri' | 'noSiriMonitor'>): strin
   return [aset.noSiri, aset.noSiriMonitor].map((x) => String(x ?? '').trim().toUpperCase()).filter(Boolean)
 }
 
-type RujukanPemegang = Pick<Aset, 'pemegang' | 'stafId' | 'unitId'>
+type RujukanPemegang = Pick<Aset, 'pemegang' | 'stafId' | 'unitId' | 'lokasi'>
 
 // Unit aset dikira daripada staf pemegang supaya kekal betul bila staf bertukar unit.
 export function unitIdAset(aset: RujukanPemegang, stafMap: Map<string, Staf>): string | null {
@@ -32,7 +32,12 @@ export function unitIdAset(aset: RujukanPemegang, stafMap: Map<string, Staf>): s
 
 export function namaPemegang(aset: RujukanPemegang, stafMap: Map<string, Staf>): string {
   if (aset.pemegang === 'staf') return (aset.stafId && stafMap.get(aset.stafId)?.nama) || '(staf tiada)'
-  return GUNASAMA
+  return namaGunasama(aset)
+}
+
+// Aset gunasama dinamakan ikut lokasinya (contoh kaunter) jika diisi.
+export function namaGunasama(aset: Pick<Aset, 'lokasi'>): string {
+  return aset.lokasi?.trim().toUpperCase() || GUNASAMA
 }
 
 export function jawatanGred(staf: Pick<Staf, 'jawatan' | 'gred'> | null | undefined): string {
@@ -112,19 +117,22 @@ export function labelPemegang({
   pemegang,
   staf,
   unit,
+  lokasi,
 }: {
   pemegang: JenisPemegang
   staf: Staf | null | undefined
   unit: Unit | null | undefined
+  lokasi?: string
 }): string {
   const namaUnit = unit?.nama ? ` (${unit.nama})` : ''
-  return pemegang === 'staf' ? `${staf?.nama ?? '(staf tiada)'}${namaUnit}` : `${GUNASAMA}${namaUnit}`
+  return pemegang === 'staf' ? `${staf?.nama ?? '(staf tiada)'}${namaUnit}` : `${namaGunasama({ lokasi })}${namaUnit}`
 }
 
 export function pemegangBerubah(lama: RujukanPemegang | null | undefined, baru: RujukanPemegang): boolean {
   if (!lama) return true
   if (lama.pemegang !== baru.pemegang) return true
-  return baru.pemegang === 'staf' ? lama.stafId !== baru.stafId : lama.unitId !== baru.unitId
+  if (baru.pemegang === 'staf') return lama.stafId !== baru.stafId
+  return lama.unitId !== baru.unitId || namaGunasama(lama) !== namaGunasama(baru)
 }
 
 // Aset yang boleh dijadikan induk: bukan diri sendiri dan bukan aset yang sudah terikat di bawahnya.
