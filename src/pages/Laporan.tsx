@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useData } from '../context/Data'
-import { JENIS_ASET } from '../lib/konstan'
+import { JENIS_ASET, TUNJUK_WARRANTY } from '../lib/konstan'
 import { JENIS_GABUNG, PILIHAN_STATUS_LAPORAN, adaLajurJenis, adaLajurMonitor, binaLaporan, lajurLaporan, type TapisLaporan, type TapisStatusLaporan } from '../lib/laporan'
 import PilihOrganisasi from '../components/PilihOrganisasi'
 import { Kosong, Ralat, TajukHalaman, mesejRalat } from '../components/ui'
@@ -78,10 +78,12 @@ export default function Laporan() {
             <option value="bahagian">Bahagian (gabung semua unit)</option>
           </select>
         </label>
-        <label className="flex items-center gap-2 self-end pb-2 text-sm">
-          <input type="checkbox" checked={t.lajurWarranty} onChange={(e) => set({ lajurWarranty: e.target.checked })} />
-          Tambah lajur tempoh warranty
-        </label>
+        {TUNJUK_WARRANTY && (
+          <label className="flex items-center gap-2 self-end pb-2 text-sm">
+            <input type="checkbox" checked={t.lajurWarranty} onChange={(e) => set({ lajurWarranty: e.target.checked })} />
+            Tambah lajur tempoh warranty
+          </label>
+        )}
       </div>
 
       {seksyen.length === 0 ? (

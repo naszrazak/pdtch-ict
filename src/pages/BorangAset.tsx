@@ -5,7 +5,7 @@ import { db } from '../lib/firebase'
 import { usePengguna } from '../context/Auth'
 import { useData } from '../context/Data'
 import { jejakOrganisasi } from '../lib/jejak'
-import { JENIS_ADA_MONITOR, JENIS_ASET, STATUS_ASET, labelJenis, type KodJenis, type KodStatus } from '../lib/konstan'
+import { JENIS_ADA_MONITOR, JENIS_ASET, STATUS_ASET, TUNJUK_WARRANTY, labelJenis, type KodJenis, type KodStatus } from '../lib/konstan'
 import {
   bolehJadiInduk,
   formatTarikh,
@@ -349,30 +349,32 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
         <Medan label="Tarikh terima (pilihan)">
           <input className="input" type="date" value={f.tarikhTerima} onChange={(e) => set({ tarikhTerima: e.target.value })} />
         </Medan>
-        <Medan
-          label="Tempoh warranty (pilihan)"
-          nota={
-            tamatWarranty
-              ? `Tamat ${formatTarikh(tamatWarranty)}`
-              : tempoh
-                ? 'Isi tarikh terima untuk kira tarikh tamat.'
-                : undefined
-          }
-        >
-          <div className="flex items-center gap-2">
-            <input
-              className="input"
-              type="number"
-              min={0}
-              step={1}
-              inputMode="numeric"
-              value={f.tempohWarranty}
-              onChange={(e) => set({ tempohWarranty: e.target.value })}
-              placeholder="Contoh: 3"
-            />
-            <span className="text-sm text-slate-500">tahun</span>
-          </div>
-        </Medan>
+        {TUNJUK_WARRANTY && (
+          <Medan
+            label="Tempoh warranty (pilihan)"
+            nota={
+              tamatWarranty
+                ? `Tamat ${formatTarikh(tamatWarranty)}`
+                : tempoh
+                  ? 'Isi tarikh terima untuk kira tarikh tamat.'
+                  : undefined
+            }
+          >
+            <div className="flex items-center gap-2">
+              <input
+                className="input"
+                type="number"
+                min={0}
+                step={1}
+                inputMode="numeric"
+                value={f.tempohWarranty}
+                onChange={(e) => set({ tempohWarranty: e.target.value })}
+                placeholder="Contoh: 3"
+              />
+              <span className="text-sm text-slate-500">tahun</span>
+            </div>
+          </Medan>
+        )}
         <div className="sm:col-span-2">
           <Medan label="Diikat kepada aset (pilihan)" nota="Contoh: monitor diikat kepada set PC pemegang yang sama.">
             <select className="input" value={f.indukId} onChange={(e) => set({ indukId: e.target.value })}>

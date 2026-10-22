@@ -1,5 +1,5 @@
 import type { Aset, DataAset, JenisPemegang, Staf, Unit } from '../types'
-import { GUNASAMA } from './konstan'
+import { GUNASAMA, TUNJUK_WARRANTY } from './konstan'
 
 // Medan pilihan yang menjadikan aset "belum lengkap" jika kosong.
 export const MEDAN_WAJIB_LENGKAP = [
@@ -8,11 +8,13 @@ export const MEDAN_WAJIB_LENGKAP = [
   { medan: 'tempohWarranty', label: 'Tempoh warranty' },
 ] as const satisfies readonly { medan: keyof DataAset; label: string }[]
 
+const MEDAN_DISEMAK = MEDAN_WAJIB_LENGKAP.filter((m) => TUNJUK_WARRANTY || m.medan !== 'tempohWarranty')
+
 export function medanTidakLengkap(aset: Partial<DataAset>): string[] {
   // Rekod lama yang hanya ada tarikh tamat dikira sudah ada maklumat warranty.
   const ada = (medan: keyof DataAset) =>
     !!String(aset[medan] ?? '').trim() || (medan === 'tempohWarranty' && !!aset.tarikhTamatWarranty)
-  return MEDAN_WAJIB_LENGKAP.filter(({ medan }) => !ada(medan)).map((m) => m.label)
+  return MEDAN_DISEMAK.filter(({ medan }) => !ada(medan)).map((m) => m.label)
 }
 
 // Semua no. siri pada aset (termasuk monitor), huruf besar, untuk semakan pendua.

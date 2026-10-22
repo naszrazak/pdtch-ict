@@ -28,6 +28,9 @@ export type KodPeranan = (typeof PERANAN)[number]['kod']
 
 export const GUNASAMA = 'GUNASAMA'
 
+// Maklumat warranty disembunyikan buat masa ini (data sedia ada tetap disimpan). Tukar kepada true untuk papar semula.
+export const TUNJUK_WARRANTY = false
+
 // Jenis aset yang boleh mempunyai monitor sebagai aksesori (no. siri monitor direkod dalam aset yang sama).
 export const JENIS_ADA_MONITOR: readonly KodJenis[] = ['pc', 'laptop']
 
