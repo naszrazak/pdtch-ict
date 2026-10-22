@@ -42,7 +42,7 @@ export function jenamaModel(aset: Partial<Pick<DataAset, 'jenama' | 'model'>>): 
   return [aset.jenama, aset.model]
     .map((x) => String(x ?? '').trim())
     .filter(Boolean)
-    .join(' / ')
+    .join(' ')
 }
 
 export function formatTarikh(iso: string | null | undefined): string {

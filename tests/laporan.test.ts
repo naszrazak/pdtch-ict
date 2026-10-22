@@ -55,8 +55,8 @@ test('ikut bahagian: gabung unit, staf dulu kemudian gunasama, dilupus dikecuali
     s[0].baris.map((b) => [b.bil, b.nama, b.jawatanGred, b.jenamaModel]),
     [
       [1, 'ALI', 'PEGAWAI DAERAH M48', 'Acer'],
-      [2, 'GUNASAMA', '', 'HP / ProDesk'],
-      [3, 'BAKAR', 'PEM. TADBIR', 'Dell / OptiPlex'],
+      [2, 'GUNASAMA', '', 'HP ProDesk'],
+      [3, 'BAKAR', 'PEM. TADBIR', 'Dell OptiPlex'],
     ],
   )
   assert.equal(s[1].baris[0].tarikhWarranty, '31/01/2027')
