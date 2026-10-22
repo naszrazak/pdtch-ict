@@ -4,6 +4,10 @@ import { jenamaModel, medanTidakLengkap } from '../lib/aset'
 import type { AsetPenuh } from '../types'
 import { Kosong, LencanaStatus } from './ui'
 
+export interface NavigasiAset {
+  senarai: string[]
+}
+
 // Senarai aset: jadual pada skrin lebar, kad pada telefon.
 interface Props {
   aset: AsetPenuh[]
@@ -13,12 +17,14 @@ interface Props {
 
 export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang = true }: Props) {
   if (aset.length === 0) return <Kosong>Tiada aset.</Kosong>
+  // Susunan senarai ini dibawa ke halaman butiran untuk butang Sebelum / Seterusnya.
+  const state: NavigasiAset = { senarai: aset.map((a) => a.id) }
   return (
     <>
       <ul className="space-y-2 md:hidden">
         {aset.map((a) => (
           <li key={a.id}>
-            <Link to={`/aset/${a.id}`} className="card block">
+            <Link to={`/aset/${a.id}`} state={state} className="card block">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="font-medium">
@@ -56,7 +62,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
             {aset.map((a) => (
               <tr key={a.id} className="hover:bg-blue-50">
                 <td className="px-3 py-2">
-                  <Link to={`/aset/${a.id}`} className="font-medium text-blue-800 hover:underline">
+                  <Link to={`/aset/${a.id}`} state={state} className="font-medium text-blue-800 hover:underline">
                     {labelJenis(a.jenis)}
                   </Link>
                 </td>

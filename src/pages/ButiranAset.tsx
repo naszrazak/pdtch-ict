@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { collection, onSnapshot, orderBy, query, type Timestamp } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 import { useAuth, usePengguna } from '../context/Auth'
@@ -8,7 +8,8 @@ import { labelJenis } from '../lib/konstan'
 import { formatTarikh, jenamaModel, medanTidakLengkap } from '../lib/aset'
 import { dataAsal, padam } from '../lib/tulis'
 import type { SejarahPemegang } from '../types'
-import JadualAset from '../components/JadualAset'
+import JadualAset, { type NavigasiAset } from '../components/JadualAset'
+import { susunAset } from '../lib/carian'
 import { Kosong, LencanaStatus, Ralat, TajukHalaman, mesejRalat } from '../components/ui'
 import { jejakOrganisasi } from '../lib/jejak'
 
@@ -30,6 +31,7 @@ export default function ButiranAset() {
   const { isAdmin, bolehTulis } = useAuth()
   const pengguna = usePengguna()
   const navigate = useNavigate()
+  const navigasi = useLocation().state as NavigasiAset | null
   const [sejarah, setSejarah] = useState<SejarahPemegang[]>([])
   const [namaPengguna, setNamaPengguna] = useState(() => new Map<string, string>())
   const [ralat, setRalat] = useState('')
@@ -59,6 +61,13 @@ export default function ButiranAset() {
   const anak = asetPenuh.filter((x) => x.indukId === a.id)
   const kurang = medanTidakLengkap(a)
 
+  // Sebelum / Seterusnya ikut senarai asal (dengan tapisan); jika dibuka terus, ikut semua aset.
+  const senarai = navigasi?.senarai?.includes(a.id) ? navigasi.senarai : susunAset(asetPenuh).map((x) => x.id)
+  const kedudukan = senarai.indexOf(a.id)
+  const sebelum = senarai[kedudukan - 1]
+  const seterusnya = senarai[kedudukan + 1]
+  const stateSenarai: NavigasiAset = { senarai }
+
   const padamAset = async () => {
     if (anak.length) return setRalat('Aset ini mempunyai aset yang diikat kepadanya. Lepaskan ikatan itu dahulu.')
     if (!window.confirm(`Padam ${labelJenis(a.jenis)} ${jenamaModel(a)}? Tindakan ini tidak boleh dibatalkan.`)) return
@@ -82,6 +91,27 @@ export default function ButiranAset() {
         tajuk={`${labelJenis(a.jenis)} ${jenamaModel(a)}`}
         keterangan={a._nama}
       >
+        <div className="flex items-center gap-1">
+          <Link
+            to={sebelum ? `/aset/${sebelum}` : '#'}
+            state={stateSenarai}
+            className={`btn-secondary ${sebelum ? '' : 'pointer-events-none opacity-40'}`}
+            aria-disabled={!sebelum}
+          >
+            ‹ Sebelum
+          </Link>
+          <span className="px-1 text-sm text-slate-500">
+            {kedudukan + 1} / {senarai.length}
+          </span>
+          <Link
+            to={seterusnya ? `/aset/${seterusnya}` : '#'}
+            state={stateSenarai}
+            className={`btn-secondary ${seterusnya ? '' : 'pointer-events-none opacity-40'}`}
+            aria-disabled={!seterusnya}
+          >
+            Seterusnya ›
+          </Link>
+        </div>
         {bolehTulis && (
           <Link to={`/aset/${a.id}/kemaskini`} className="btn-primary">
             Kemaskini
