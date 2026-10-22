@@ -123,10 +123,7 @@ export default function ButiranAset() {
           </button>
         )}
         {bolehTulis && (
-          <Link
-            to={a.pemegang === 'staf' && a.stafId ? `/aset/baru?stafId=${a.stafId}` : `/aset/baru?unitId=${a.unitId ?? ''}`}
-            className="btn-secondary"
-          >
+          <Link to="/aset/baru" className="btn-secondary">
             + Tambah aset
           </Link>
         )}
