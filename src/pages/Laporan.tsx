@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useData } from '../context/Data'
 import { JENIS_ASET, TUNJUK_WARRANTY } from '../lib/konstan'
-import { JENIS_GABUNG, PILIHAN_STATUS_LAPORAN, adaLajurJenis, adaLajurMonitor, binaLaporan, lajurLaporan, type TapisLaporan, type TapisStatusLaporan } from '../lib/laporan'
+import { JENIS_GABUNG, PILIHAN_STATUS_LAPORAN, adaLajurJenis, binaLaporan, lajurLaporan, type TapisLaporan, type TapisStatusLaporan } from '../lib/laporan'
 import PilihOrganisasi from '../components/PilihOrganisasi'
 import { Kosong, Ralat, TajukHalaman, mesejRalat } from '../components/ui'
 
@@ -15,7 +15,7 @@ export default function Laporan() {
   const set = (ubah: Partial<NilaiTapis>) => setT((x) => ({ ...x, ...ubah }))
 
   const seksyen = binaLaporan(data, t)
-  const lajur = lajurLaporan(t.lajurWarranty, adaLajurMonitor(seksyen), adaLajurJenis(seksyen))
+  const lajur = lajurLaporan(t.lajurWarranty, false, adaLajurJenis(seksyen))
   const jumlah = seksyen.reduce((n, s) => n + s.baris.length, 0)
 
   async function eksport(jenis: 'pdf' | 'excel') {
