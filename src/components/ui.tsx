@@ -25,7 +25,7 @@ export function Kosong({ children }: { children: ReactNode }) {
 
 export function Ralat({ children }: { children?: ReactNode }) {
   if (!children) return null
-  return <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">{children}</div>
+  return <div className="whitespace-pre-line rounded-md bg-red-50 p-3 text-sm text-red-700">{children}</div>
 }
 
 export interface LangkahJejak {

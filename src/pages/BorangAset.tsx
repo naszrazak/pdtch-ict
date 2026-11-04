@@ -189,20 +189,30 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
       catatan: f.catatan.trim(),
     }
 
-    const pendua = asetPenuh.filter(
-      (a) =>
-        a.id !== asetId &&
-        (sirinya(data).some((x) => sirinya(a).includes(x)) ||
-          (data.noPendaftaran && a.noPendaftaran === data.noPendaftaran) ||
-          (data.ipAddress && a.ipAddress === data.ipAddress)),
-    )
-    if (
-      pendua.length &&
-      !window.confirm(
-        `No. siri / no. pendaftaran / alamat IP ini sudah wujud pada:\n${pendua.map((a) => `- ${labelJenis(a.jenis)} ${jenamaModel(a)} (${a._nama})`).join('\n')}\n\nTeruskan simpan?`,
-      )
-    )
+    // No. siri (termasuk monitor), no. pendaftaran dan alamat IP mesti unik. Aset yang diikat
+    // (contoh monitor kepada PC) boleh berkongsi no. pendaftaran dengan induknya.
+    const lain = asetPenuh.filter((a) => a.id !== asetId)
+    const keluarga = (a: AsetPenuh) => a.id === data.indukId || a.indukId === asetId
+    const sebut = (a: AsetPenuh) => `${labelJenis(a.jenis)} ${jenamaModel(a)} (${a._nama})`
+    const bertindih = [
+      ...sirinya(data).flatMap((x) => {
+        const a = lain.find((y) => sirinya(y).includes(x))
+        return a ? [`No. siri ${x} sudah digunakan oleh ${sebut(a)}.`] : []
+      }),
+      ...(() => {
+        const a = data.noPendaftaran && lain.find((y) => y.noPendaftaran === data.noPendaftaran && !keluarga(y))
+        return a ? [`No. pendaftaran ${data.noPendaftaran} sudah digunakan oleh ${sebut(a)}.`] : []
+      })(),
+      ...(() => {
+        const a = data.ipAddress && lain.find((y) => y.ipAddress === data.ipAddress)
+        return a ? [`Alamat IP ${data.ipAddress} sudah digunakan oleh ${sebut(a)}.`] : []
+      })(),
+    ]
+    if (bertindih.length) {
+      setRalat(bertindih.join('\n'))
+      window.scrollTo(0, 0)
       return
+    }
 
     setSibuk(true)
     try {
