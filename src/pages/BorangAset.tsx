@@ -30,6 +30,7 @@ interface NilaiBorang {
   noSiri: string
   noSiriMonitor: string
   noPendaftaran: string
+  ipAddress: string
   tarikhTerima: string
   tempohWarranty: string
   tarikhTamatWarranty: string
@@ -49,6 +50,7 @@ const KOSONG: NilaiBorang = {
   noSiri: '',
   noSiriMonitor: '',
   noPendaftaran: '',
+  ipAddress: '',
   tarikhTerima: '',
   tempohWarranty: '',
   tarikhTamatWarranty: '',
@@ -72,6 +74,7 @@ function nilaiAwal(asal: AsetPenuh | undefined, params: URLSearchParams, stafMap
       noSiri: asal.noSiri ?? '',
       noSiriMonitor: asal.noSiriMonitor ?? '',
       noPendaftaran: asal.noPendaftaran ?? '',
+      ipAddress: asal.ipAddress ?? '',
       tarikhTerima: asal.tarikhTerima ?? '',
       tempohWarranty: String(asal.tempohWarranty ?? tempohDariTarikh(asal.tarikhTerima, asal.tarikhTamatWarranty) ?? ''),
       tarikhTamatWarranty: asal.tarikhTamatWarranty ?? '',
@@ -172,6 +175,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
       noSiri: f.noSiri.trim(),
       noSiriMonitor: JENIS_ADA_MONITOR.includes(f.jenis) ? f.noSiriMonitor.trim() : '',
       noPendaftaran: f.noPendaftaran.trim().toUpperCase(),
+      ipAddress: f.ipAddress.trim(),
       tarikhTerima: f.tarikhTerima,
       tempohWarranty: tempoh,
       tarikhTamatWarranty: tamatWarranty,
@@ -188,12 +192,14 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
     const pendua = asetPenuh.filter(
       (a) =>
         a.id !== asetId &&
-        (sirinya(data).some((x) => sirinya(a).includes(x)) || (data.noPendaftaran && a.noPendaftaran === data.noPendaftaran)),
+        (sirinya(data).some((x) => sirinya(a).includes(x)) ||
+          (data.noPendaftaran && a.noPendaftaran === data.noPendaftaran) ||
+          (data.ipAddress && a.ipAddress === data.ipAddress)),
     )
     if (
       pendua.length &&
       !window.confirm(
-        `No. siri / no. pendaftaran ini sudah wujud pada:\n${pendua.map((a) => `- ${labelJenis(a.jenis)} ${jenamaModel(a)} (${a._nama})`).join('\n')}\n\nTeruskan simpan?`,
+        `No. siri / no. pendaftaran / alamat IP ini sudah wujud pada:\n${pendua.map((a) => `- ${labelJenis(a.jenis)} ${jenamaModel(a)} (${a._nama})`).join('\n')}\n\nTeruskan simpan?`,
       )
     )
       return
@@ -360,6 +366,15 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
             onChange={(e) => set({ noPendaftaran: e.target.value })}
             placeholder="PDTCH/12000/H/23/30"
             autoCapitalize="characters"
+          />
+        </Medan>
+        <Medan label="Alamat IP (pilihan)" nota="Tidak dipaparkan dalam laporan.">
+          <input
+            className="input"
+            value={f.ipAddress}
+            onChange={(e) => set({ ipAddress: e.target.value })}
+            placeholder="Contoh: 10.1.20.35"
+            inputMode="decimal"
           />
         </Medan>
         <Medan label="Tarikh terima (pilihan)">

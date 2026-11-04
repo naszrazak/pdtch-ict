@@ -38,6 +38,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
               <div className="mt-1 grid grid-cols-2 gap-x-2 text-xs text-slate-500">
                 <span className="truncate">Siri: {a.noSiri || '-'}</span>
                 <span className="truncate">Daftar: {a.noPendaftaran || '-'}</span>
+                {a.ipAddress && <span className="truncate">IP: {a.ipAddress}</span>}
               </div>
               {tunjukKurang && <div className="mt-1 text-xs text-amber-700">Tiada: {medanTidakLengkap(a).join(', ')}</div>}
             </Link>
@@ -55,6 +56,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
               <th className="px-3 py-2">Unit</th>
               <th className="px-3 py-2">No. Siri</th>
               <th className="px-3 py-2">No. Pendaftaran</th>
+              <th className="px-3 py-2">Alamat IP</th>
               {tunjukKurang ? <th className="px-3 py-2">Belum diisi</th> : <th className="px-3 py-2">Status</th>}
             </tr>
           </thead>
@@ -71,6 +73,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
                 <td className="px-3 py-2 text-slate-600">{a._unit?.nama ?? '-'}</td>
                 <td className="px-3 py-2">{a.noSiri || '-'}</td>
                 <td className="px-3 py-2">{a.noPendaftaran || '-'}</td>
+                <td className="px-3 py-2">{a.ipAddress || '-'}</td>
                 {tunjukKurang ? (
                   <td className="px-3 py-2 text-amber-700">{medanTidakLengkap(a).join(', ')}</td>
                 ) : (

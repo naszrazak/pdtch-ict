@@ -17,7 +17,7 @@ export default function PenapisAset({ nilai, onChange, tanpaStatus = false }: Pr
         <input
           className="input"
           type="search"
-          placeholder="Nama, no. siri, no. daftar..."
+          placeholder="Nama, no. siri, no. daftar, IP..."
           value={nilai.q}
           onChange={(e) => set({ q: e.target.value })}
         />
