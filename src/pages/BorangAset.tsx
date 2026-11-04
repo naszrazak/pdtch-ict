@@ -31,6 +31,7 @@ interface NilaiBorang {
   noSiriMonitor: string
   noPendaftaran: string
   ipAddress: string
+  tarikhPerolehan: string
   tarikhTerima: string
   tempohWarranty: string
   tarikhTamatWarranty: string
@@ -51,6 +52,7 @@ const KOSONG: NilaiBorang = {
   noSiriMonitor: '',
   noPendaftaran: '',
   ipAddress: '',
+  tarikhPerolehan: '',
   tarikhTerima: '',
   tempohWarranty: '',
   tarikhTamatWarranty: '',
@@ -75,6 +77,7 @@ function nilaiAwal(asal: AsetPenuh | undefined, params: URLSearchParams, stafMap
       noSiriMonitor: asal.noSiriMonitor ?? '',
       noPendaftaran: asal.noPendaftaran ?? '',
       ipAddress: asal.ipAddress ?? '',
+      tarikhPerolehan: asal.tarikhPerolehan ?? '',
       tarikhTerima: asal.tarikhTerima ?? '',
       tempohWarranty: String(asal.tempohWarranty ?? tempohDariTarikh(asal.tarikhTerima, asal.tarikhTamatWarranty) ?? ''),
       tarikhTamatWarranty: asal.tarikhTamatWarranty ?? '',
@@ -176,6 +179,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
       noSiriMonitor: JENIS_ADA_MONITOR.includes(f.jenis) ? f.noSiriMonitor.trim() : '',
       noPendaftaran: f.noPendaftaran.trim().toUpperCase(),
       ipAddress: f.ipAddress.trim(),
+      tarikhPerolehan: f.tarikhPerolehan,
       tarikhTerima: f.tarikhTerima,
       tempohWarranty: tempoh,
       tarikhTamatWarranty: tamatWarranty,
@@ -385,6 +389,14 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
             onChange={(e) => set({ ipAddress: e.target.value })}
             placeholder="Contoh: 10.1.20.35"
             inputMode="decimal"
+          />
+        </Medan>
+        <Medan label="Tarikh perolehan (pilihan)">
+          <input
+            className="input"
+            type="date"
+            value={f.tarikhPerolehan}
+            onChange={(e) => set({ tarikhPerolehan: e.target.value })}
           />
         </Medan>
         <Medan label="Tarikh terima (pilihan)">

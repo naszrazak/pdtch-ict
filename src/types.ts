@@ -43,6 +43,7 @@ export interface DataAset {
   noPendaftaran: string
   /** Alamat IP rangkaian; tidak dimasukkan dalam laporan */
   ipAddress?: string
+  tarikhPerolehan?: string // YYYY-MM-DD atau ''
   tarikhTerima: string // YYYY-MM-DD atau ''
   /** Tempoh warranty dalam tahun; tarikh tamat dikira daripada tarikh terima */
   tempohWarranty?: number | null
