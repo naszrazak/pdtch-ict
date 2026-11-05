@@ -41,7 +41,7 @@ export interface DataAset {
   /** No. siri monitor bagi PC/laptop; monitor berkongsi no. pendaftaran dengan aset ini */
   noSiriMonitor?: string
   noPendaftaran: string
-  /** Alamat IP rangkaian; tidak dimasukkan dalam laporan */
+  /** Alamat IP rangkaian */
   ipAddress?: string
   tarikhPerolehan?: string // YYYY-MM-DD atau ''
   tarikhTerima: string // YYYY-MM-DD atau ''

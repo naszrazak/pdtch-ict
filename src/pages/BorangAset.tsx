@@ -382,7 +382,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
             autoCapitalize="characters"
           />
         </Medan>
-        <Medan label="Alamat IP (pilihan)" nota="Tidak dipaparkan dalam laporan.">
+        <Medan label="Alamat IP (pilihan)">
           <input
             className="input"
             value={f.ipAddress}

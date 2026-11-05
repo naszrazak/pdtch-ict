@@ -34,6 +34,7 @@ export interface BarisLaporan {
   noSiri: string
   noSiriMonitor: string
   noPendaftaran: string
+  ipAddress: string
   tarikhWarranty: string
   asetId: string
 }
@@ -76,6 +77,7 @@ export function lajurLaporan(lajurWarranty?: boolean, lajurMonitor?: boolean, la
     { kunci: 'noSiri', tajuk: 'No. Siri', lebar: 22 },
     ...(lajurMonitor ? [{ kunci: 'noSiriMonitor', tajuk: 'No. Siri Monitor', lebar: 22 } as const] : []),
     { kunci: 'noPendaftaran', tajuk: 'No. Pendaftaran', lebar: 26 },
+    { kunci: 'ipAddress', tajuk: 'No. IP', lebar: 16 },
   ]
   if (lajurWarranty) lajur.push({ kunci: 'tarikhWarranty', tajuk: 'Tempoh Warranty', lebar: 22 })
   return lajur
@@ -172,6 +174,7 @@ export function binaLaporan(data: DataLaporan, tapis: TapisLaporan): SeksyenLapo
         noSiri: a.noSiri ?? '',
         noSiriMonitor: a.noSiriMonitor ?? '',
         noPendaftaran: a.noPendaftaran ?? '',
+        ipAddress: a.ipAddress ?? '',
         tarikhWarranty: labelWarranty(a),
         asetId: a.id,
       })),
