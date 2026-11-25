@@ -18,7 +18,7 @@ import Pengguna from './pages/Pengguna'
 import LogAudit from './pages/LogAudit'
 
 export default function App() {
-  const { user, memuat, sah, isAdmin } = useAuth()
+  const { user, memuat, sah, isAdmin, bolehTulis } = useAuth()
 
   if (memuat) return <Memuat penuh />
   if (!user) return <Login />
@@ -30,10 +30,10 @@ export default function App() {
         <Route element={<Layout />}>
           <Route index element={<Utama />} />
           <Route path="aset" element={<SenaraiAset />} />
-          <Route path="aset/baru" element={<BorangAset />} />
+          {bolehTulis && <Route path="aset/baru" element={<BorangAset />} />}
           <Route path="aset/:id" element={<ButiranAset />} />
-          <Route path="aset/:id/kemaskini" element={<BorangAset />} />
-          <Route path="belum-lengkap" element={<BelumLengkap />} />
+          {bolehTulis && <Route path="aset/:id/kemaskini" element={<BorangAset />} />}
+          {bolehTulis && <Route path="belum-lengkap" element={<BelumLengkap />} />}
           <Route path="organisasi" element={<Organisasi />} />
           <Route path="staf/:id" element={<ButiranStaf />} />
           <Route path="laporan" element={<Laporan />} />

@@ -20,6 +20,7 @@ export const STATUS_ASET = [
 export const PERANAN = [
   { kod: 'admin', label: 'Admin', huraian: 'Akses penuh' },
   { kod: 'juruteknik', label: 'Juruteknik', huraian: 'Boleh tambah dan kemaskini, tidak boleh padam' },
+  { kod: 'pemeriksa', label: 'Pemeriksa', huraian: 'Lihat aset, organisasi dan laporan sahaja' },
 ] as const
 
 export type KodJenis = (typeof JENIS_ASET)[number]['kod']

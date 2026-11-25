@@ -129,7 +129,7 @@ export default function ButiranAset() {
         )}
       </TajukHalaman>
       <Ralat>{ralat}</Ralat>
-      {kurang.length > 0 && a.status !== 'dilupus' && (
+      {bolehTulis && kurang.length > 0 && a.status !== 'dilupus' && (
         <div className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">Belum lengkap: {kurang.join(', ')}</div>
       )}
 
@@ -183,33 +183,35 @@ export default function ButiranAset() {
         {anak.length > 0 ? <JadualAset aset={anak} tunjukPemegang={false} /> : <Kosong>Tiada aset diikat.</Kosong>}
       </section>
 
-      <section className="card">
-        <h2 className="mb-2 font-medium">Sejarah pemegang</h2>
-        {sejarah.length === 0 ? (
-          <p className="text-sm text-slate-500">Tiada rekod.</p>
-        ) : (
-          <ol className="space-y-2 text-sm">
-            {sejarah.map((s) => (
-              <li key={s.id} className="border-l-2 border-blue-200 pl-3">
-                <div>
-                  {s.dari ? (
-                    <>
-                      {s.dari} → <b>{s.ke}</b>
-                    </>
-                  ) : (
-                    <>
-                      Didaftarkan kepada <b>{s.ke}</b>
-                    </>
-                  )}
-                </div>
-                <div className="text-xs text-slate-500">
-                  {formatMasa(s.masa)} · {s.namaOleh || namaPengguna.get(s.oleh?.toLowerCase()) || s.oleh}
-                </div>
-              </li>
-            ))}
-          </ol>
-        )}
-      </section>
+      {bolehTulis && (
+        <section className="card">
+          <h2 className="mb-2 font-medium">Sejarah pemegang</h2>
+          {sejarah.length === 0 ? (
+            <p className="text-sm text-slate-500">Tiada rekod.</p>
+          ) : (
+            <ol className="space-y-2 text-sm">
+              {sejarah.map((s) => (
+                <li key={s.id} className="border-l-2 border-blue-200 pl-3">
+                  <div>
+                    {s.dari ? (
+                      <>
+                        {s.dari} → <b>{s.ke}</b>
+                      </>
+                    ) : (
+                      <>
+                        Didaftarkan kepada <b>{s.ke}</b>
+                      </>
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    {formatMasa(s.masa)} · {s.namaOleh || namaPengguna.get(s.oleh?.toLowerCase()) || s.oleh}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </section>
+      )}
     </div>
   )
 }

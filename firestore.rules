@@ -1,7 +1,7 @@
 rules_version = '2';
 
 // Pengguna sistem dikenal pasti melalui dokumen /pengguna/{emel} (emel huruf kecil).
-// admin: akses penuh. juruteknik: boleh tambah dan kemaskini, tidak boleh padam.
+// admin: akses penuh. juruteknik: boleh tambah dan kemaskini, tidak boleh padam. pemeriksa: baca sahaja.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -39,7 +39,7 @@ service cloud.firestore {
             && request.resource.data.aktif == true);
       // Admin tidak boleh menurunkan atau menyahaktifkan dirinya sendiri.
       allow update: if admin()
-        && request.resource.data.peranan in ['admin', 'juruteknik']
+        && request.resource.data.peranan in ['admin', 'juruteknik', 'pemeriksa']
         && (e != emel() || (request.resource.data.peranan == 'admin' && request.resource.data.aktif == true));
       allow delete: if admin() && e != emel();
     }

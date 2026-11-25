@@ -24,16 +24,18 @@ function Kad({ label, nilai, ke }: { label: string; nilai: number; ke?: string }
 
 export default function Utama() {
   const { aset, staf, unit } = useData()
-  const { isAdmin } = useAuth()
+  const { isAdmin, bolehTulis } = useAuth()
   const belumLengkap = aset.filter((a) => a.status !== 'dilupus' && medanTidakLengkap(a).length > 0).length
   const kira = (f: (a: Aset) => boolean) => aset.filter(f).length
 
   return (
     <div className="space-y-6">
       <TajukHalaman tajuk="Utama" keterangan="Ringkasan aset ICT PDTCH">
-        <Link to="/aset/baru" className="btn-primary">
-          + Tambah aset
-        </Link>
+        {bolehTulis && (
+          <Link to="/aset/baru" className="btn-primary">
+            + Tambah aset
+          </Link>
+        )}
       </TajukHalaman>
 
       {staf.length === 0 && isAdmin && (
@@ -44,7 +46,7 @@ export default function Utama() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kad label="Jumlah aset" nilai={aset.length} ke="/aset" />
-        <Kad label="Aset belum lengkap" nilai={belumLengkap} ke="/belum-lengkap" />
+        {bolehTulis && <Kad label="Aset belum lengkap" nilai={belumLengkap} ke="/belum-lengkap" />}
         <Kad label="Staf" nilai={staf.length} ke="/organisasi" />
         <Kad label="Unit" nilai={unit.length} ke="/organisasi" />
       </div>

@@ -6,7 +6,7 @@ import { labelPeranan } from '../lib/konstan'
 import { Memuat, Ralat } from './ui'
 
 export default function Layout() {
-  const { profil, isAdmin, keluar } = useAuth()
+  const { profil, isAdmin, bolehTulis, keluar } = useAuth()
   const { sedia, ralat } = useData()
   const [buka, setBuka] = useState(false)
   const lokasi = useLocation()
@@ -19,7 +19,7 @@ export default function Layout() {
   const menu = [
     { ke: '/', label: 'Utama', tepat: true },
     { ke: '/aset', label: 'Aset' },
-    { ke: '/belum-lengkap', label: 'Belum Lengkap' },
+    ...(bolehTulis ? [{ ke: '/belum-lengkap', label: 'Belum Lengkap' }] : []),
     { ke: '/organisasi', label: 'Organisasi & Staf' },
     { ke: '/laporan', label: 'Laporan' },
     ...(isAdmin
