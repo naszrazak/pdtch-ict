@@ -59,7 +59,7 @@ function BorangPengguna({ asal, onTutup }: { asal?: RekodPengguna; onTutup: () =
     <Modal tajuk={asal ? 'Kemaskini Pengguna' : 'Tambah Pengguna'} onTutup={onTutup}>
       <form onSubmit={hantar} className="space-y-3">
         <Ralat>{ralat}</Ralat>
-        <Medan label="Emel" nota={!asal && 'Mesti sama dengan emel akaun log masuk yang dicipta dalam Firebase Authentication.'}>
+        <Medan label="Emel" nota={!asal && 'Emel akaun Google pengguna. Tidak perlu cipta akaun dalam Firebase; pengguna terus log masuk dengan Google.'}>
           <input className="input" type="email" value={f.emel} disabled={!!asal} onChange={(e) => setF({ ...f, emel: e.target.value })} required />
         </Medan>
         <Medan label="Nama paparan">
