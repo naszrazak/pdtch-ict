@@ -113,8 +113,8 @@ export default function Pengguna() {
         </button>
       </TajukHalaman>
       <div className="mb-4 rounded-md bg-blue-50 p-3 text-sm text-blue-900">
-        Untuk menambah pengguna: (1) cipta akaun emel/kata laluan di Firebase Console → Authentication → Users, kemudian (2) tambah
-        emel yang sama di sini dan pilih peranan.
+        Untuk menambah pengguna: tambah emel akaun Google mereka di sini dan pilih peranan. Pengguna kemudian terus log masuk
+        dengan Google. Emel yang tiada dalam senarai ini tidak boleh masuk dan akaunnya dipadam secara automatik.
       </div>
       <ul className="space-y-2">
         {senarai.map((p) => (
