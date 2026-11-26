@@ -1,7 +1,7 @@
 import type { Borders } from 'exceljs'
-import { lajurLaporan, namaFailLaporan, type SeksyenLaporan } from './laporan'
+import { adaLajurIp, lajurLaporan, namaFailLaporan, type SeksyenLaporan } from './laporan'
 
-const lajurCetak = (s: SeksyenLaporan, lajurWarranty: boolean) => lajurLaporan(lajurWarranty, false, s.jenis === 'lain')
+const lajurCetak = (s: SeksyenLaporan, lajurWarranty: boolean) => lajurLaporan(lajurWarranty, false, s.jenis === 'lain', adaLajurIp(s))
 
 interface PilihanEksport {
   lajurWarranty?: boolean

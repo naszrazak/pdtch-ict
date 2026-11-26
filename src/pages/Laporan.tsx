@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useData } from '../context/Data'
 import { JENIS_ASET, TUNJUK_WARRANTY } from '../lib/konstan'
-import { JENIS_GABUNG, PILIHAN_STATUS_LAPORAN, adaLajurJenis, binaLaporan, lajurLaporan, type TapisLaporan, type TapisStatusLaporan } from '../lib/laporan'
+import { JENIS_GABUNG, PILIHAN_STATUS_LAPORAN, adaLajurIp, adaLajurJenis, binaLaporan, lajurLaporan, type TapisLaporan, type TapisStatusLaporan } from '../lib/laporan'
 import PilihOrganisasi from '../components/PilihOrganisasi'
 import { Kosong, Ralat, TajukHalaman, mesejRalat } from '../components/ui'
 
@@ -102,7 +102,7 @@ export default function Laporan() {
               <table className="w-full min-w-[640px] border-collapse text-sm">
                 <thead>
                   <tr>
-                    {lajurLaporan(t.lajurWarranty, false, adaLajurJenis(s)).map((l) => (
+                    {lajurLaporan(t.lajurWarranty, false, adaLajurJenis(s), adaLajurIp(s)).map((l) => (
                       <th key={l.kunci} className="border border-slate-400 bg-slate-100 px-2 py-1 text-center">
                         {l.tajuk}
                       </th>
@@ -112,7 +112,7 @@ export default function Laporan() {
                 <tbody>
                   {s.baris.map((b) => (
                     <tr key={b.asetId}>
-                      {lajurLaporan(t.lajurWarranty, false, adaLajurJenis(s)).map((l) => (
+                      {lajurLaporan(t.lajurWarranty, false, adaLajurJenis(s), adaLajurIp(s)).map((l) => (
                         <td key={l.kunci} className={`border border-slate-400 px-2 py-1 ${l.kunci === 'bil' ? 'text-center' : ''}`}>
                           {b[l.kunci]}
                         </td>

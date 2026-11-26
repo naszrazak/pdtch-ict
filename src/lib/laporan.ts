@@ -1,5 +1,5 @@
 import type { Aset, Bahagian, Staf, Unit } from '../types'
-import { JENIS_ADA_MONITOR, JENIS_ASET, tajukJenis, type KodJenis } from './konstan'
+import { JENIS_ADA_IP, JENIS_ADA_MONITOR, JENIS_ASET, tajukJenis, type KodJenis } from './konstan'
 import { bandingSusunan, jawatanGred, jenamaModel, kekananan, labelJenisAset, labelWarranty, namaGunasama, unitIdAset } from './aset'
 
 export const PILIHAN_STATUS_LAPORAN = [
@@ -67,7 +67,10 @@ export const adaLajurMonitor = (seksyen: SeksyenLaporan[]): boolean =>
 // Lajur jenis aset hanya perlu bila semua jenis digabung, atau bagi Lain-lain (jenis sebenar dinyatakan pengguna).
 export const adaLajurJenis = (s: SeksyenLaporan): boolean => s.jenis === null || s.jenis === 'lain'
 
-export function lajurLaporan(lajurWarranty?: boolean, lajurMonitor?: boolean, lajurJenis?: boolean): LajurLaporan[] {
+// Lajur no. IP hanya bagi PC/laptop, atau senarai gabung semua jenis.
+export const adaLajurIp = (s: SeksyenLaporan): boolean => s.jenis === null || JENIS_ADA_IP.includes(s.jenis)
+
+export function lajurLaporan(lajurWarranty?: boolean, lajurMonitor?: boolean, lajurJenis?: boolean, lajurIp = true): LajurLaporan[] {
   const lajur: LajurLaporan[] = [
     { kunci: 'bil', tajuk: 'Bil', lebar: 6 },
     { kunci: 'nama', tajuk: 'Nama Pengguna', lebar: 34 },
@@ -77,7 +80,7 @@ export function lajurLaporan(lajurWarranty?: boolean, lajurMonitor?: boolean, la
     { kunci: 'noSiri', tajuk: 'No. Siri', lebar: 22 },
     ...(lajurMonitor ? [{ kunci: 'noSiriMonitor', tajuk: 'No. Siri Monitor', lebar: 22 } as const] : []),
     { kunci: 'noPendaftaran', tajuk: 'No. Pendaftaran', lebar: 26 },
-    { kunci: 'ipAddress', tajuk: 'No. IP', lebar: 16 },
+    ...(lajurIp ? [{ kunci: 'ipAddress', tajuk: 'No. IP', lebar: 16 } as const] : []),
   ]
   if (lajurWarranty) lajur.push({ kunci: 'tarikhWarranty', tajuk: 'Tempoh Warranty', lebar: 22 })
   return lajur
