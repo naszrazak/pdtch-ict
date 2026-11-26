@@ -42,7 +42,7 @@ export function namaGunasama(aset: Pick<Aset, 'lokasi'>): string {
 
 // Label jenis aset; bagi "Lain-lain" guna jenis yang dinyatakan jika ada.
 export function labelJenisAset(aset: Pick<DataAset, 'jenis' | 'jenisLain'>): string {
-  return (aset.jenis === 'lain' && aset.jenisLain?.trim()) || labelJenis(aset.jenis)
+  return ((aset.jenis === 'lain' && aset.jenisLain?.trim()) || labelJenis(aset.jenis)).toUpperCase()
 }
 
 export function jawatanGred(staf: Pick<Staf, 'jawatan' | 'gred'> | null | undefined): string {

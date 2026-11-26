@@ -83,10 +83,10 @@ test('semua jenis digabung: satu senarai bagi setiap bahagian, staf yang sama di
   assert.deepEqual(
     s[0].baris.map((b) => [b.nama, b.jenis]),
     [
-      ['ALI', 'Komputer (PC)'],
-      ['ALI', 'Pencetak'],
-      ['GUNASAMA', 'Komputer (PC)'],
-      ['BAKAR', 'Komputer (PC)'],
+      ['ALI', 'KOMPUTER (PC)'],
+      ['ALI', 'PENCETAK'],
+      ['GUNASAMA', 'KOMPUTER (PC)'],
+      ['BAKAR', 'KOMPUTER (PC)'],
     ],
   )
 })
