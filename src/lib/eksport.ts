@@ -42,7 +42,7 @@ export async function janaPdf(seksyen: SeksyenLaporan[], { lajurWarranty = false
     autoTable(doc, {
       startY: y + 6,
       margin: { left: margin, right: margin, top: 14 },
-      head: [lajur.map((l) => l.tajuk)],
+      head: [lajur.map((l) => l.tajuk.toUpperCase())],
       body: s.baris.map((b) => lajur.map((l) => String(b[l.kunci] ?? ''))),
       theme: 'grid',
       styles: { font: 'helvetica', fontSize: 9, textColor: 20, lineColor: 60, lineWidth: 0.2, cellPadding: 1.8, valign: 'middle' },
@@ -104,7 +104,7 @@ export async function janaExcel(seksyen: SeksyenLaporan[], { lajurWarranty = fal
     const kepala = ws.getRow(barisKepala)
     lajur.forEach((l, k) => {
       const c = kepala.getCell(k + 1)
-      c.value = l.tajuk
+      c.value = l.tajuk.toUpperCase()
       c.font = { bold: true }
       c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
       c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE6E6E6' } }

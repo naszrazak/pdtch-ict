@@ -9,6 +9,10 @@
   ::file-selector-button {
     border-color: var(--color-slate-200, currentColor);
   }
+  /* Semua kepala jadual dalam huruf besar. */
+  th {
+    text-transform: uppercase;
+  }
 }
 
 @utility input {
