@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type MouseEvent } from 'react'
+import { useState, type ChangeEvent, type FormEvent, type MouseEvent } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { doc, serverTimestamp, type WriteBatch } from 'firebase/firestore'
 import { db } from '../lib/firebase'
@@ -35,6 +35,8 @@ interface NilaiBorang {
   indukId: string
   catatan: string
 }
+
+type MedanTeks = 'jenisLain' | 'jenama' | 'model' | 'noSiri' | 'noSiriMonitor' | 'noPendaftaran' | 'lokasi' | 'catatan'
 
 const KOSONG: NilaiBorang = {
   jenis: 'pc',
@@ -117,6 +119,14 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
   const [mesej, setMesej] = useState('')
 
   const set = (ubah: Partial<NilaiBorang>) => setF((x) => ({ ...x, ...ubah }))
+  // Medan teks ditaip terus dalam huruf besar.
+  const setBesar = (k: MedanTeks) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const el = e.target
+    const kursor = el.selectionStart
+    set({ [k]: el.value.toUpperCase() })
+    // Kekalkan kedudukan kursor bila menaip di tengah teks.
+    requestAnimationFrame(() => el.setSelectionRange(kursor, kursor))
+  }
   // Bahagian dipilih dahulu untuk menapis senarai unit aset gunasama.
   const [bahagianGunasama, setBahagianGunasama] = useState(() => unitMap.get(f.unitId)?.bahagianId ?? '')
 
@@ -168,11 +178,11 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
     const unitId = staf ? staf.unitId : f.unitId
     const data: DataAset = {
       jenis: f.jenis,
-      jenisLain: f.jenis === 'lain' ? f.jenisLain.trim() : '',
-      jenama: f.jenama.trim(),
-      model: f.model.trim(),
-      noSiri: f.noSiri.trim(),
-      noSiriMonitor: JENIS_ADA_MONITOR.includes(f.jenis) ? f.noSiriMonitor.trim() : '',
+      jenisLain: f.jenis === 'lain' ? f.jenisLain.trim().toUpperCase() : '',
+      jenama: f.jenama.trim().toUpperCase(),
+      model: f.model.trim().toUpperCase(),
+      noSiri: f.noSiri.trim().toUpperCase(),
+      noSiriMonitor: JENIS_ADA_MONITOR.includes(f.jenis) ? f.noSiriMonitor.trim().toUpperCase() : '',
       noPendaftaran: f.noPendaftaran.trim().toUpperCase(),
       ipAddress: JENIS_ADA_IP.includes(f.jenis) ? f.ipAddress.trim() : '',
       tarikhPerolehan: f.tarikhPerolehan,
@@ -186,7 +196,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
       bahagianId: unitMap.get(unitId)?.bahagianId ?? null,
       indukId: f.indukId || null,
       lokasi: f.pemegang === 'gunasama' ? f.lokasi.trim().toUpperCase() : '',
-      catatan: f.catatan.trim(),
+      catatan: f.catatan.trim().toUpperCase(),
     }
 
     // No. siri (termasuk monitor), no. pendaftaran dan alamat IP mesti unik. Aset yang diikat
@@ -313,7 +323,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
                 <input
                   className="input"
                   value={f.lokasi}
-                  onChange={(e) => set({ lokasi: e.target.value })}
+                  onChange={(e) => setBesar('lokasi')(e)}
                   placeholder="Contoh: KAUNTER HASIL"
                   autoCapitalize="characters"
                 />
@@ -346,7 +356,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
             <input
               className="input"
               value={f.jenisLain}
-              onChange={(e) => set({ jenisLain: e.target.value })}
+              onChange={(e) => setBesar('jenisLain')(e)}
               placeholder="Contoh: Router, Switch"
               required
             />
@@ -362,20 +372,20 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
           </select>
         </Medan>
         <Medan label="Jenama">
-          <input className="input" value={f.jenama} onChange={(e) => set({ jenama: e.target.value })} placeholder="Contoh: Dell" />
+          <input className="input" value={f.jenama} onChange={(e) => setBesar('jenama')(e)} placeholder="Contoh: Dell" />
         </Medan>
         <Medan label="Model">
-          <input className="input" value={f.model} onChange={(e) => set({ model: e.target.value })} placeholder="Contoh: OptiPlex 7090" />
+          <input className="input" value={f.model} onChange={(e) => setBesar('model')(e)} placeholder="Contoh: OptiPlex 7090" />
         </Medan>
         <Medan label="No. siri (pilihan)">
-          <input className="input" value={f.noSiri} onChange={(e) => set({ noSiri: e.target.value })} autoCapitalize="characters" />
+          <input className="input" value={f.noSiri} onChange={(e) => setBesar('noSiri')(e)} autoCapitalize="characters" />
         </Medan>
         {JENIS_ADA_MONITOR.includes(f.jenis) && (
           <Medan label="No. siri monitor (pilihan)" nota="Monitor berkongsi no. pendaftaran dengan aset ini.">
             <input
               className="input"
               value={f.noSiriMonitor}
-              onChange={(e) => set({ noSiriMonitor: e.target.value })}
+              onChange={(e) => setBesar('noSiriMonitor')(e)}
               autoCapitalize="characters"
             />
           </Medan>
@@ -384,7 +394,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
           <input
             className="input"
             value={f.noPendaftaran}
-            onChange={(e) => set({ noPendaftaran: e.target.value })}
+            onChange={(e) => setBesar('noPendaftaran')(e)}
             placeholder="PDTCH/12000/H/23/30"
             autoCapitalize="characters"
           />
@@ -451,7 +461,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
         </div>
         <div className="sm:col-span-2">
           <Medan label="Catatan (pilihan)">
-            <textarea className="input" rows={2} value={f.catatan} onChange={(e) => set({ catatan: e.target.value })} />
+            <textarea className="input" rows={2} value={f.catatan} onChange={(e) => setBesar('catatan')(e)} />
           </Medan>
         </div>
       </section>

@@ -54,7 +54,7 @@ export function BorangBahagian({ asal, onTutup }: { asal?: Bahagian; onTutup: ()
       simpan(pengguna, {
         koleksi: 'bahagian',
         id: asal?.id ?? null,
-        data: { nama: nama.trim(), susunan: Number(susunan) },
+        data: { nama: nama.trim().toUpperCase(), susunan: Number(susunan) },
         sebelum: asal && dataAsal(asal),
         ringkasan: `${asal ? 'Kemaskini' : 'Tambah'} bahagian ${nama.trim()}`,
       }),
@@ -72,7 +72,7 @@ export function BorangBahagian({ asal, onTutup }: { asal?: Bahagian; onTutup: ()
       <form onSubmit={hantar} className="space-y-3">
         <Ralat>{ralat}</Ralat>
         <Medan label="Nama bahagian">
-          <input className="input" value={nama} onChange={(e) => setNama(e.target.value)} required />
+          <input className="input" value={nama} onChange={(e) => setNama(e.target.value.toUpperCase())} required />
         </Medan>
         <Medan label="Susunan" nota="Nombor kecil dipaparkan dahulu.">
           <input className="input" type="number" value={susunan} onChange={(e) => setSusunan(Number(e.target.value))} required />
@@ -100,7 +100,7 @@ export function BorangUnit({ asal, bahagianId, onTutup }: { asal?: Unit; bahagia
       simpan(pengguna, {
         koleksi: 'unit',
         id: asal?.id ?? null,
-        data: { nama: f.nama.trim(), bahagianId: f.bahagianId, susunan: Number(f.susunan) },
+        data: { nama: f.nama.trim().toUpperCase(), bahagianId: f.bahagianId, susunan: Number(f.susunan) },
         sebelum: asal && dataAsal(asal),
         ringkasan: `${asal ? 'Kemaskini' : 'Tambah'} unit ${f.nama.trim()}`,
       }),
@@ -119,7 +119,7 @@ export function BorangUnit({ asal, bahagianId, onTutup }: { asal?: Unit; bahagia
       <form onSubmit={hantar} className="space-y-3">
         <Ralat>{ralat}</Ralat>
         <Medan label="Nama unit">
-          <input className="input" value={f.nama} onChange={(e) => setF({ ...f, nama: e.target.value })} required />
+          <input className="input" value={f.nama} onChange={(e) => setF({ ...f, nama: e.target.value.toUpperCase() })} required />
         </Medan>
         <Medan label="Bahagian">
           <select className="input" value={f.bahagianId} onChange={(e) => setF({ ...f, bahagianId: e.target.value })} required>
@@ -162,7 +162,7 @@ export function BorangStaf({
     susunan: asal?.susunan ?? Math.max(0, ...staf.filter((s) => s.unitId === (unitId ?? asal?.unitId)).map((s) => s.susunan ?? 0)) + 1,
   })
   const { ralat, setRalat, sibuk, jalankan } = useHantar(onTutup)
-  const set = (k: keyof typeof f) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value })
+  const set = (k: keyof typeof f) => (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: k === 'unitId' ? e.target.value : e.target.value.toUpperCase() })
 
   const hantar = (e: FormEvent) => {
     e.preventDefault()
@@ -171,7 +171,7 @@ export function BorangStaf({
       simpan(pengguna, {
         koleksi: 'staf',
         id: asal?.id ?? null,
-        data: { nama, jawatan: f.jawatan.trim(), gred: f.gred.trim().toUpperCase(), unitId: f.unitId, susunan: Number(f.susunan) },
+        data: { nama, jawatan: f.jawatan.trim().toUpperCase(), gred: f.gred.trim().toUpperCase(), unitId: f.unitId, susunan: Number(f.susunan) },
         sebelum: asal && dataAsal(asal),
         ringkasan: `${asal ? 'Kemaskini' : 'Tambah'} staf ${nama}`,
       }),
