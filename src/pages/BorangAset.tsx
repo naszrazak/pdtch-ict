@@ -5,7 +5,7 @@ import { db } from '../lib/firebase'
 import { usePengguna } from '../context/Auth'
 import { useData } from '../context/Data'
 import { jejakOrganisasi } from '../lib/jejak'
-import { JENIS_ADA_MONITOR, JENIS_ASET, STATUS_ASET, TUNJUK_WARRANTY, labelJenis, type KodJenis, type KodStatus } from '../lib/konstan'
+import { JENIS_ADA_IP, JENIS_ADA_MONITOR, JENIS_ASET, STATUS_ASET, TUNJUK_WARRANTY, labelJenis, type KodJenis, type KodStatus } from '../lib/konstan'
 import {
   bolehJadiInduk,
   formatTarikh,
@@ -178,7 +178,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
       noSiri: f.noSiri.trim(),
       noSiriMonitor: JENIS_ADA_MONITOR.includes(f.jenis) ? f.noSiriMonitor.trim() : '',
       noPendaftaran: f.noPendaftaran.trim().toUpperCase(),
-      ipAddress: f.ipAddress.trim(),
+      ipAddress: JENIS_ADA_IP.includes(f.jenis) ? f.ipAddress.trim() : '',
       tarikhPerolehan: f.tarikhPerolehan,
       tarikhTerima: f.tarikhTerima,
       tempohWarranty: tempoh,
@@ -382,15 +382,17 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
             autoCapitalize="characters"
           />
         </Medan>
-        <Medan label="Alamat IP (pilihan)">
-          <input
-            className="input"
-            value={f.ipAddress}
-            onChange={(e) => set({ ipAddress: e.target.value })}
-            placeholder="Contoh: 10.1.20.35"
-            inputMode="decimal"
-          />
-        </Medan>
+        {JENIS_ADA_IP.includes(f.jenis) && (
+          <Medan label="Alamat IP (pilihan)">
+            <input
+              className="input"
+              value={f.ipAddress}
+              onChange={(e) => set({ ipAddress: e.target.value })}
+              placeholder="Contoh: 10.1.20.35"
+              inputMode="decimal"
+            />
+          </Medan>
+        )}
         <Medan label="Tarikh perolehan (pilihan)">
           <input
             className="input"
