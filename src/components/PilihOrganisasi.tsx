@@ -12,7 +12,7 @@ interface Props extends NilaiOrganisasi {
   wajib?: boolean
 }
 
-export default function PilihOrganisasi({ bahagianId, unitId, onChange, labelSemua = 'Semua', wajib = false }: Props) {
+export default function PilihOrganisasi({ bahagianId, unitId, onChange, labelSemua = 'SEMUA', wajib = false }: Props) {
   const { bahagian, unit } = useData()
   const senaraiUnit = bahagianId ? unit.filter((u) => u.bahagianId === bahagianId) : unit
   return (

@@ -26,10 +26,10 @@ export default function PenapisAset({ nilai, onChange, tanpaStatus = false }: Pr
       <label className="block">
         <span className="label">Jenis</span>
         <select className="input" value={nilai.jenis} onChange={(e) => set({ jenis: e.target.value })}>
-          <option value="">Semua</option>
+          <option value="">SEMUA</option>
           {JENIS_ASET.map((j) => (
             <option key={j.kod} value={j.kod}>
-              {j.label}
+              {j.label.toUpperCase()}
             </option>
           ))}
         </select>
@@ -38,10 +38,10 @@ export default function PenapisAset({ nilai, onChange, tanpaStatus = false }: Pr
         <label className="block">
           <span className="label">Status</span>
           <select className="input" value={nilai.status} onChange={(e) => set({ status: e.target.value })}>
-            <option value="">Semua</option>
+            <option value="">SEMUA</option>
             {STATUS_ASET.map((s) => (
               <option key={s.kod} value={s.kod}>
-                {s.label}
+                {s.label.toUpperCase()}
               </option>
             ))}
           </select>

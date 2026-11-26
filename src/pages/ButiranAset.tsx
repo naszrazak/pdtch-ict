@@ -17,7 +17,7 @@ function Baris({ label, children }: { label: string; children?: ReactNode }) {
   return (
     <div className="grid grid-cols-3 gap-2 py-2 text-sm">
       <dt className="text-slate-500">{label}</dt>
-      <dd className="col-span-2 break-words">{children || <span className="text-slate-400">-</span>}</dd>
+      <dd className="col-span-2 break-words uppercase">{children || <span className="text-slate-400">-</span>}</dd>
     </div>
   )
 }

@@ -23,7 +23,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
   const state: NavigasiAset = { senarai: aset.map((a) => a.id) }
   return (
     <>
-      <ul className="space-y-2 md:hidden">
+      <ul className="space-y-2 uppercase md:hidden">
         {aset.map((a) => (
           <li key={a.id}>
             <Link to={`/aset/${a.id}`} state={state} className="card block">
@@ -62,7 +62,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
               {tunjukKurang ? <th className="px-3 py-2">Belum diisi</th> : <th className="px-3 py-2">Status</th>}
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y uppercase">
             {aset.map((a) => (
               <tr key={a.id} className="hover:bg-blue-50">
                 <td className="px-3 py-2">
