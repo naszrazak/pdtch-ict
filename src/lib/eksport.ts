@@ -1,6 +1,8 @@
 import type { Borders } from 'exceljs'
 import { lajurLaporan, namaFailLaporan, type SeksyenLaporan } from './laporan'
 
+const lajurCetak = (s: SeksyenLaporan, lajurWarranty: boolean) => lajurLaporan(lajurWarranty, false, s.jenis === 'lain')
+
 interface PilihanEksport {
   lajurWarranty?: boolean
 }
@@ -17,17 +19,16 @@ function muatTurun(blob: Blob, namaFail: string): void {
 }
 
 // PDF A4 landskap, tanpa logo dan tanpa ruang tandatangan. Satu seksyen satu halaman baharu.
-// Lajur jenis aset dan no. siri monitor hanya untuk paparan skrin, tidak dicetak.
+// No. siri monitor tidak dicetak. Lajur jenis aset hanya dicetak bagi Lain-lain.
 export async function janaPdf(seksyen: SeksyenLaporan[], { lajurWarranty = false }: PilihanEksport = {}): Promise<void> {
   const [{ jsPDF }, { autoTable }] = await Promise.all([import('jspdf'), import('jspdf-autotable')])
-  const lajur = lajurLaporan(lajurWarranty)
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
   const lebarHalaman = doc.internal.pageSize.getWidth()
   const margin = 12
-  const jumlahLebar = lajur.reduce((n, l) => n + l.lebar, 0)
-  const skala = (lebarHalaman - margin * 2) / jumlahLebar
 
   seksyen.forEach((s, i) => {
+    const lajur = lajurCetak(s, lajurWarranty)
+    const skala = (lebarHalaman - margin * 2) / lajur.reduce((n, l) => n + l.lebar, 0)
     if (i > 0) doc.addPage()
     let y = 16
     doc.setFont('helvetica', 'bold')
@@ -76,7 +77,6 @@ function namaLembaran(s: SeksyenLaporan, terpakai: Set<string>): string {
 // Excel untuk disunting: satu lembaran bagi setiap seksyen, disediakan untuk cetakan A4 landskap.
 export async function janaExcel(seksyen: SeksyenLaporan[], { lajurWarranty = false }: PilihanEksport = {}): Promise<void> {
   const { default: ExcelJS } = await import('exceljs')
-  const lajur = lajurLaporan(lajurWarranty)
   const wb = new ExcelJS.Workbook()
   const terpakai = new Set<string>()
   const sempadan: Partial<Borders> = {
@@ -87,6 +87,7 @@ export async function janaExcel(seksyen: SeksyenLaporan[], { lajurWarranty = fal
   }
 
   for (const s of seksyen) {
+    const lajur = lajurCetak(s, lajurWarranty)
     const ws = wb.addWorksheet(namaLembaran(s, terpakai), {
       pageSetup: { paperSize: 9, orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0, horizontalCentered: true },
     })

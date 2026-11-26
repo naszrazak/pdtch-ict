@@ -64,8 +64,8 @@ export interface DataLaporan {
 export const adaLajurMonitor = (seksyen: SeksyenLaporan[]): boolean =>
   seksyen.some((s) => s.jenis === null || JENIS_ADA_MONITOR.includes(s.jenis))
 
-// Lajur jenis aset hanya perlu bila semua jenis digabung dalam satu senarai.
-export const adaLajurJenis = (seksyen: SeksyenLaporan[]): boolean => seksyen.some((s) => s.jenis === null)
+// Lajur jenis aset hanya perlu bila semua jenis digabung, atau bagi Lain-lain (jenis sebenar dinyatakan pengguna).
+export const adaLajurJenis = (s: SeksyenLaporan): boolean => s.jenis === null || s.jenis === 'lain'
 
 export function lajurLaporan(lajurWarranty?: boolean, lajurMonitor?: boolean, lajurJenis?: boolean): LajurLaporan[] {
   const lajur: LajurLaporan[] = [

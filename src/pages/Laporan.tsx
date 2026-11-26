@@ -15,7 +15,6 @@ export default function Laporan() {
   const set = (ubah: Partial<NilaiTapis>) => setT((x) => ({ ...x, ...ubah }))
 
   const seksyen = binaLaporan(data, t)
-  const lajur = lajurLaporan(t.lajurWarranty, false, adaLajurJenis(seksyen))
   const jumlah = seksyen.reduce((n, s) => n + s.baris.length, 0)
 
   async function eksport(jenis: 'pdf' | 'excel') {
@@ -103,7 +102,7 @@ export default function Laporan() {
               <table className="w-full min-w-[640px] border-collapse text-sm">
                 <thead>
                   <tr>
-                    {lajur.map((l) => (
+                    {lajurLaporan(t.lajurWarranty, false, adaLajurJenis(s)).map((l) => (
                       <th key={l.kunci} className="border border-slate-400 bg-slate-100 px-2 py-1 text-center">
                         {l.tajuk}
                       </th>
@@ -113,7 +112,7 @@ export default function Laporan() {
                 <tbody>
                   {s.baris.map((b) => (
                     <tr key={b.asetId}>
-                      {lajur.map((l) => (
+                      {lajurLaporan(t.lajurWarranty, false, adaLajurJenis(s)).map((l) => (
                         <td key={l.kunci} className={`border border-slate-400 px-2 py-1 ${l.kunci === 'bil' ? 'text-center' : ''}`}>
                           {b[l.kunci]}
                         </td>
