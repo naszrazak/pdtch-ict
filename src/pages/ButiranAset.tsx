@@ -4,8 +4,8 @@ import { collection, onSnapshot, orderBy, query, type Timestamp } from 'firebase
 import { db } from '../lib/firebase'
 import { useAuth, usePengguna } from '../context/Auth'
 import { useData } from '../context/Data'
-import { JENIS_ADA_IP, TUNJUK_WARRANTY, labelJenis } from '../lib/konstan'
-import { formatTarikh, jawatanGred, jenamaModel, labelWarranty, medanTidakLengkap } from '../lib/aset'
+import { JENIS_ADA_IP, TUNJUK_WARRANTY } from '../lib/konstan'
+import { formatTarikh, jawatanGred, jenamaModel, labelJenisAset, labelWarranty, medanTidakLengkap } from '../lib/aset'
 import { dataAsal, padam } from '../lib/tulis'
 import type { SejarahPemegang } from '../types'
 import JadualAset, { type NavigasiAset } from '../components/JadualAset'
@@ -70,13 +70,13 @@ export default function ButiranAset() {
 
   const padamAset = async () => {
     if (anak.length) return setRalat('Aset ini mempunyai aset yang diikat kepadanya. Lepaskan ikatan itu dahulu.')
-    if (!window.confirm(`Padam ${labelJenis(a.jenis)} ${jenamaModel(a)}? Tindakan ini tidak boleh dibatalkan.`)) return
+    if (!window.confirm(`Padam ${labelJenisAset(a)} ${jenamaModel(a)}? Tindakan ini tidak boleh dibatalkan.`)) return
     try {
       await padam(pengguna, {
         koleksi: 'aset',
         id: a.id,
         sebelum: dataAsal(a),
-        ringkasan: `Padam ${labelJenis(a.jenis)} ${jenamaModel(a)} (${a._nama})`,
+        ringkasan: `Padam ${labelJenisAset(a)} ${jenamaModel(a)} (${a._nama})`,
       })
       navigate('/aset', { replace: true })
     } catch (err) {
@@ -88,7 +88,7 @@ export default function ButiranAset() {
     <div className="mx-auto max-w-3xl space-y-4">
       <TajukHalaman
         jejak={jejakOrganisasi(a._bahagian, a._unit, a._staf)}
-        tajuk={`${labelJenis(a.jenis)} ${jenamaModel(a)}`}
+        tajuk={`${labelJenisAset(a)} ${jenamaModel(a)}`}
         keterangan={a._nama}
       >
         <div className="flex items-center gap-1">
@@ -149,7 +149,7 @@ export default function ButiranAset() {
         </Baris>
         <Baris label="Unit">{a._unit?.nama}</Baris>
         <Baris label="Bahagian">{a._bahagian?.nama}</Baris>
-        <Baris label="Jenis">{labelJenis(a.jenis)}</Baris>
+        <Baris label="Jenis">{labelJenisAset(a)}</Baris>
         <Baris label="Jenama / Model">{jenamaModel(a)}</Baris>
         <Baris label="No. siri">{a.noSiri}</Baris>
         {a.noSiriMonitor && <Baris label="No. siri monitor">{a.noSiriMonitor}</Baris>}
@@ -161,7 +161,7 @@ export default function ButiranAset() {
         <Baris label="Diikat kepada">
           {induk && (
             <Link to={`/aset/${induk.id}`} className="text-blue-800 underline">
-              {labelJenis(induk.jenis)} {jenamaModel(induk)}
+              {labelJenisAset(induk)} {jenamaModel(induk)}
             </Link>
           )}
         </Baris>

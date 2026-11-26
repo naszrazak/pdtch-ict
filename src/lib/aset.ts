@@ -1,5 +1,5 @@
 import type { Aset, DataAset, JenisPemegang, Staf, Unit } from '../types'
-import { GUNASAMA, TUNJUK_WARRANTY } from './konstan'
+import { GUNASAMA, TUNJUK_WARRANTY, labelJenis } from './konstan'
 
 // Medan pilihan yang menjadikan aset "belum lengkap" jika kosong.
 export const MEDAN_WAJIB_LENGKAP = [
@@ -38,6 +38,11 @@ export function namaPemegang(aset: RujukanPemegang, stafMap: Map<string, Staf>):
 // Aset gunasama dinamakan ikut lokasinya (contoh kaunter) jika diisi.
 export function namaGunasama(aset: Pick<Aset, 'lokasi'>): string {
   return aset.lokasi?.trim().toUpperCase() || GUNASAMA
+}
+
+// Label jenis aset; bagi "Lain-lain" guna jenis yang dinyatakan jika ada.
+export function labelJenisAset(aset: Pick<DataAset, 'jenis' | 'jenisLain'>): string {
+  return (aset.jenis === 'lain' && aset.jenisLain?.trim()) || labelJenis(aset.jenis)
 }
 
 export function jawatanGred(staf: Pick<Staf, 'jawatan' | 'gred'> | null | undefined): string {

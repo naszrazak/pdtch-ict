@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
-import { labelJenis } from '../lib/konstan'
-import { jenamaModel, medanTidakLengkap } from '../lib/aset'
+import { jenamaModel, labelJenisAset, medanTidakLengkap } from '../lib/aset'
 import type { AsetPenuh } from '../types'
 import { Kosong, LencanaStatus } from './ui'
 
@@ -28,7 +27,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="font-medium">
-                    {labelJenis(a.jenis)} · {jenamaModel(a) || '-'}
+                    {labelJenisAset(a)} · {jenamaModel(a) || '-'}
                   </div>
                   {tunjukPemegang && <div className="truncate text-sm text-slate-600">{a._nama}</div>}
                   <div className="truncate text-xs text-slate-500">{a._unit?.nama ?? '-'}</div>
@@ -65,7 +64,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
               <tr key={a.id} className="hover:bg-blue-50">
                 <td className="px-3 py-2">
                   <Link to={`/aset/${a.id}`} state={state} className="font-medium text-blue-800 hover:underline">
-                    {labelJenis(a.jenis)}
+                    {labelJenisAset(a)}
                   </Link>
                 </td>
                 <td className="px-3 py-2">{jenamaModel(a) || '-'}</td>

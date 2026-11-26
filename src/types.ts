@@ -35,6 +35,8 @@ export type JenisPemegang = 'staf' | 'gunasama'
 
 export interface DataAset {
   jenis: KodJenis
+  /** Nama jenis bila jenis 'lain' dipilih, contoh: Router */
+  jenisLain?: string
   jenama: string
   model: string
   noSiri: string

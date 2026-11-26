@@ -5,17 +5,8 @@ import { db } from '../lib/firebase'
 import { usePengguna } from '../context/Auth'
 import { useData } from '../context/Data'
 import { jejakOrganisasi } from '../lib/jejak'
-import { JENIS_ADA_IP, JENIS_ADA_MONITOR, JENIS_ASET, STATUS_ASET, TUNJUK_WARRANTY, labelJenis, type KodJenis, type KodStatus } from '../lib/konstan'
-import {
-  bolehJadiInduk,
-  formatTarikh,
-  jenamaModel,
-  labelPemegang,
-  pemegangBerubah,
-  sirinya,
-  tambahTahun,
-  tempohDariTarikh,
-} from '../lib/aset'
+import { JENIS_ADA_IP, JENIS_ADA_MONITOR, JENIS_ASET, STATUS_ASET, TUNJUK_WARRANTY, type KodJenis, type KodStatus } from '../lib/konstan'
+import { bolehJadiInduk, formatTarikh, jenamaModel, labelJenisAset, labelPemegang, pemegangBerubah, sirinya, tambahTahun, tempohDariTarikh } from '../lib/aset'
 import { dataAsal, idBaharu, simpan } from '../lib/tulis'
 import PilihStaf from '../components/PilihStaf'
 import PilihOrganisasi from '../components/PilihOrganisasi'
@@ -25,6 +16,7 @@ import type { AsetPenuh, DataAset, JenisPemegang, Staf } from '../types'
 // Nilai borang: medan rujukan disimpan sebagai '' (bukan null) supaya sesuai untuk input HTML.
 interface NilaiBorang {
   jenis: KodJenis
+  jenisLain: string
   jenama: string
   model: string
   noSiri: string
@@ -46,6 +38,7 @@ interface NilaiBorang {
 
 const KOSONG: NilaiBorang = {
   jenis: 'pc',
+  jenisLain: '',
   jenama: '',
   model: '',
   noSiri: '',
@@ -71,6 +64,7 @@ function nilaiAwal(asal: AsetPenuh | undefined, params: URLSearchParams, stafMap
   if (asal) {
     return {
       jenis: asal.jenis,
+      jenisLain: asal.jenisLain ?? '',
       jenama: asal.jenama ?? '',
       model: asal.model ?? '',
       noSiri: asal.noSiri ?? '',
@@ -145,7 +139,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
   const jejak = asal
     ? [
         ...jejakOrganisasi(asal._bahagian, asal._unit, asal._staf),
-        { label: `${labelJenis(asal.jenis)} ${jenamaModel(asal)}`, to: `/aset/${asal.id}` },
+        { label: `${labelJenisAset(asal)} ${jenamaModel(asal)}`, to: `/aset/${asal.id}` },
       ]
     : jejakBaru.length > 1
       ? jejakBaru
@@ -168,11 +162,13 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
     setMesej('')
     if (f.pemegang === 'staf' && !f.stafId) return setRalat('Pilih staf pemegang.')
     if (f.pemegang === 'gunasama' && !f.unitId) return setRalat('Pilih unit bagi aset gunasama.')
+    if (f.jenis === 'lain' && !f.jenisLain.trim()) return setRalat('Nyatakan jenis aset bagi Lain-lain.')
 
     const staf = f.pemegang === 'staf' ? (stafMap.get(f.stafId) ?? null) : null
     const unitId = staf ? staf.unitId : f.unitId
     const data: DataAset = {
       jenis: f.jenis,
+      jenisLain: f.jenis === 'lain' ? f.jenisLain.trim() : '',
       jenama: f.jenama.trim(),
       model: f.model.trim(),
       noSiri: f.noSiri.trim(),
@@ -197,7 +193,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
     // (contoh monitor kepada PC) boleh berkongsi no. pendaftaran dengan induknya.
     const lain = asetPenuh.filter((a) => a.id !== asetId)
     const keluarga = (a: AsetPenuh) => a.id === data.indukId || a.indukId === asetId
-    const sebut = (a: AsetPenuh) => `${labelJenis(a.jenis)} ${jenamaModel(a)} (${a._nama})`
+    const sebut = (a: AsetPenuh) => `${labelJenisAset(a)} ${jenamaModel(a)} (${a._nama})`
     const bertindih = [
       ...sirinya(data).flatMap((x) => {
         const a = lain.find((y) => sirinya(y).includes(x))
@@ -242,7 +238,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
         data: { ...data },
         sebelum: asal ? dataAsal(asal) : null,
         ringkasan:
-          `${asal ? 'Kemaskini' : 'Tambah'} ${labelJenis(data.jenis)} ${jenamaModel(data)} (${ke})` +
+          `${asal ? 'Kemaskini' : 'Tambah'} ${labelJenisAset(data)} ${jenamaModel(data)} (${ke})` +
           (ikutPindah.length ? ` beserta ${ikutPindah.length} aset diikat` : ''),
         tambahan: berubah
           ? (batch, ref) => {
@@ -264,7 +260,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
           : undefined,
       })
       if (tambahLagi) {
-        setMesej(`Disimpan: ${labelJenis(data.jenis)} ${jenamaModel(data)}. Isi aset seterusnya.`)
+        setMesej(`Disimpan: ${labelJenisAset(data)} ${jenamaModel(data)}. Isi aset seterusnya.`)
         setF({ ...KOSONG, pemegang: f.pemegang, stafId: f.stafId, unitId: f.unitId, jenis: f.jenis, indukId: f.indukId })
         setAsetId(idBaharu('aset'))
         window.scrollTo(0, 0)
@@ -329,7 +325,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
           <label className="flex items-start gap-2 rounded-md bg-blue-50 p-2 text-sm">
             <input type="checkbox" className="mt-1" checked={pindahAnak} onChange={(e) => setPindahAnak(e.target.checked)} />
             <span>
-              Pindahkan juga {anak.length} aset yang diikat ({anak.map((x) => labelJenis(x.jenis)).join(', ')}) kepada pemegang baharu
+              Pindahkan juga {anak.length} aset yang diikat ({anak.map((x) => labelJenisAset(x)).join(', ')}) kepada pemegang baharu
             </span>
           </label>
         )}
@@ -345,6 +341,17 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
             ))}
           </select>
         </Medan>
+        {f.jenis === 'lain' && (
+          <Medan label="Nyatakan jenis">
+            <input
+              className="input"
+              value={f.jenisLain}
+              onChange={(e) => set({ jenisLain: e.target.value })}
+              placeholder="Contoh: Router, Switch"
+              required
+            />
+          </Medan>
+        )}
         <Medan label="Status">
           <select className="input" value={f.status} onChange={(e) => set({ status: e.target.value as KodStatus })}>
             {STATUS_ASET.map((s) => (
@@ -436,7 +443,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
               <option value="">Tiada</option>
               {calonInduk.map((a) => (
                 <option key={a.id} value={a.id}>
-                  {labelJenis(a.jenis)} · {jenamaModel(a) || '-'} {a.noSiri ? `· ${a.noSiri}` : ''}
+                  {labelJenisAset(a)} · {jenamaModel(a) || '-'} {a.noSiri ? `· ${a.noSiri}` : ''}
                 </option>
               ))}
             </select>
