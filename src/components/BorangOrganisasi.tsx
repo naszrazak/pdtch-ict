@@ -126,7 +126,7 @@ export function BorangUnit({ asal, bahagianId, onTutup }: { asal?: Unit; bahagia
             <option value="">-- Pilih --</option>
             {bahagian.map((b) => (
               <option key={b.id} value={b.id}>
-                {b.nama}
+                {b.nama.toUpperCase()}
               </option>
             ))}
           </select>
@@ -210,7 +210,7 @@ export function BorangStaf({
             <option value="">-- Pilih --</option>
             {unit.map((u) => (
               <option key={u.id} value={u.id}>
-                {u.nama}
+                {u.nama.toUpperCase()}
               </option>
             ))}
           </select>

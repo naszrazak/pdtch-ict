@@ -28,7 +28,7 @@ export default function PilihOrganisasi({ bahagianId, unitId, onChange, labelSem
           <option value="">{wajib ? '-- Pilih bahagian --' : labelSemua}</option>
           {bahagian.map((b) => (
             <option key={b.id} value={b.id}>
-              {b.nama}
+              {b.nama.toUpperCase()}
             </option>
           ))}
         </select>
@@ -47,7 +47,7 @@ export default function PilihOrganisasi({ bahagianId, unitId, onChange, labelSem
           <option value="">{wajib ? '-- Pilih unit --' : labelSemua}</option>
           {senaraiUnit.map((u) => (
             <option key={u.id} value={u.id}>
-              {u.nama}
+              {u.nama.toUpperCase()}
             </option>
           ))}
         </select>

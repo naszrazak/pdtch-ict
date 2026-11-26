@@ -346,7 +346,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
           <select className="input" value={f.jenis} onChange={(e) => set({ jenis: e.target.value as KodJenis })}>
             {JENIS_ASET.map((j) => (
               <option key={j.kod} value={j.kod}>
-                {j.label}
+                {j.label.toUpperCase()}
               </option>
             ))}
           </select>
@@ -366,7 +366,7 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
           <select className="input" value={f.status} onChange={(e) => set({ status: e.target.value as KodStatus })}>
             {STATUS_ASET.map((s) => (
               <option key={s.kod} value={s.kod}>
-                {s.label}
+                {s.label.toUpperCase()}
               </option>
             ))}
           </select>
@@ -450,10 +450,10 @@ function Borang({ id, asal }: { id: string | undefined; asal: AsetPenuh | undefi
         <div className="sm:col-span-2">
           <Medan label="Diikat kepada aset (pilihan)" nota="Contoh: monitor diikat kepada set PC pemegang yang sama.">
             <select className="input" value={f.indukId} onChange={(e) => set({ indukId: e.target.value })}>
-              <option value="">Tiada</option>
+              <option value="">TIADA</option>
               {calonInduk.map((a) => (
                 <option key={a.id} value={a.id}>
-                  {labelJenisAset(a)} · {jenamaModel(a) || '-'} {a.noSiri ? `· ${a.noSiri}` : ''}
+                  {`${labelJenisAset(a)} · ${jenamaModel(a) || '-'} ${a.noSiri ? `· ${a.noSiri}` : ''}`.toUpperCase()}
                 </option>
               ))}
             </select>
