@@ -154,7 +154,7 @@ export default function ButiranAset() {
         <Baris label="No. siri">{a.noSiri}</Baris>
         {a.noSiriMonitor && <Baris label="No. siri monitor">{a.noSiriMonitor}</Baris>}
         <Baris label="No. pendaftaran">{a.noPendaftaran}</Baris>
-        {JENIS_ADA_IP.includes(a.jenis) && <Baris label="Alamat IP">{a.ipAddress}</Baris>}
+        {bolehTulis && JENIS_ADA_IP.includes(a.jenis) && <Baris label="Alamat IP">{a.ipAddress}</Baris>}
         <Baris label="Tarikh perolehan">{formatTarikh(a.tarikhPerolehan)}</Baris>
         <Baris label="Tarikh terima">{formatTarikh(a.tarikhTerima)}</Baris>
         {TUNJUK_WARRANTY && <Baris label="Tempoh warranty">{labelWarranty(a)}</Baris>}

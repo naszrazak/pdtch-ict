@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/Auth'
 import { jenamaModel, labelJenisAset, medanTidakLengkap } from '../lib/aset'
 import type { AsetPenuh } from '../types'
 import { Kosong, LencanaStatus } from './ui'
@@ -15,6 +16,8 @@ interface Props {
 }
 
 export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang = true }: Props) {
+  // Pemeriksa tidak melihat alamat IP.
+  const { bolehTulis: tunjukIp } = useAuth()
   if (aset.length === 0) return <Kosong>Tiada aset.</Kosong>
   // Susunan senarai ini dibawa ke halaman butiran untuk butang Sebelum / Seterusnya.
   const state: NavigasiAset = { senarai: aset.map((a) => a.id) }
@@ -37,7 +40,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
               <div className="mt-1 grid grid-cols-2 gap-x-2 text-xs text-slate-500">
                 <span className="truncate">Siri: {a.noSiri || '-'}</span>
                 <span className="truncate">Daftar: {a.noPendaftaran || '-'}</span>
-                {a.ipAddress && <span className="truncate">IP: {a.ipAddress}</span>}
+                {tunjukIp && a.ipAddress && <span className="truncate">IP: {a.ipAddress}</span>}
               </div>
               {tunjukKurang && <div className="mt-1 text-xs text-amber-700">Tiada: {medanTidakLengkap(a).join(', ')}</div>}
             </Link>
@@ -55,7 +58,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
               <th className="px-3 py-2">Unit</th>
               <th className="px-3 py-2">No. Siri</th>
               <th className="px-3 py-2">No. Pendaftaran</th>
-              <th className="px-3 py-2">Alamat IP</th>
+              {tunjukIp && <th className="px-3 py-2">Alamat IP</th>}
               {tunjukKurang ? <th className="px-3 py-2">Belum diisi</th> : <th className="px-3 py-2">Status</th>}
             </tr>
           </thead>
@@ -72,7 +75,7 @@ export default function JadualAset({ aset, tunjukKurang = false, tunjukPemegang 
                 <td className="px-3 py-2 text-slate-600">{a._unit?.nama ?? '-'}</td>
                 <td className="px-3 py-2">{a.noSiri || '-'}</td>
                 <td className="px-3 py-2">{a.noPendaftaran || '-'}</td>
-                <td className="px-3 py-2">{a.ipAddress || '-'}</td>
+                {tunjukIp && <td className="px-3 py-2">{a.ipAddress || '-'}</td>}
                 {tunjukKurang ? (
                   <td className="px-3 py-2 text-amber-700">{medanTidakLengkap(a).join(', ')}</td>
                 ) : (
